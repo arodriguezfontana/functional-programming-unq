@@ -91,3 +91,48 @@ p :: (a,b)
 swap p :: (b,a)
 
 -- E2
+-- a
+apply :: (a -> b) -> (a -> b)
+first :: (c,d) -> c
+------------------------- (a <- (c,d), b <- c)
+apply first :: (c,d) -> c
+
+-- b
+first :: -> (a,b) -> a
+(swap, uflip) :: ((c,d) -> (d,c), ((d,c) -> e) -> ((c,d) -> e))
+------------------------------------- (a <- (c,d) -> (d,c), b <- ((d,c) -> e) -> ((c,d) -> e))
+first (swap, uflip) :: (c,d) -> (d,c)
+
+-- c
+twice :: (a -> a) -> (a -> a)
+doble :: Int -> Int
+------------------------- (a <- Int)
+twice doble :: Int -> Int
+
+-- d
+twice :: (a -> a) -> (a -> a)
+twice :: (b -> b) -> (b -> b)
+------------------------------------ (a <- (b -> b))
+twice twice :: (b -> b) -> (b -> b)
+
+-- e
+twice :: (a -> a) -> (a -> a) 
+uflip :: ((c,b) -> d) -> ((b,c) -> d)
+--------------------
+twice uflip :: 
+
+-- f
+twice :: (a -> a) -> (a -> a) 
+swap :: (b,c) -> (c,b)
+--------------------- (
+twice swap :: 
+
+-- g
+uflip :: ((b,a) -> c) -> ((a,b) -> c)
+swap :: (a,b) -> (b,a)
+uflip swap ::
+
+-- h
+twice twice ::
+swap ::
+(twice twice) swap :: 
