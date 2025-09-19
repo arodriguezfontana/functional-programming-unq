@@ -20,12 +20,14 @@ cuadruple 1
     8
 
 --  E3
+-- a
     cuadruple 2
 ->                  (cuadruple, x <- 2)
     2 * 4
 ->                  (Aritmetica)
     8
 
+---b
     cuadruple (cuadruple 2) -- Interno
 ->                              (cuadruple, x <- 2)
     cuadruple (2 * 4)
@@ -36,6 +38,7 @@ cuadruple 1
 ->                              (Aritmetica)
     32
 
+-- c    
     cuadruple (cuadruple 2) -- Externo
 ->                              (cuadruple, x <- cuadruple 2)
     (cuadruple 2) * 4
@@ -57,12 +60,14 @@ sumarDos x = x + 2
 -- E5
 twice succ 2 = sumarDos 2
 
+-- a
     sumarDos 2
 ->              (sumarDos, x <- 2)
     2 + 2
 ->              (Aritmetica)
     4
 
+-- b
     twice succ 2
 ->                  (twice, f <- succ)
     g 2             (g x = succ (succ x))
@@ -78,10 +83,42 @@ twice succ 2 = sumarDos 2
 -- E6
 doble = (\x -> 2 * x)
 twice doble = cuadruple
-
+twice id = id
 
 -- E7
     ((twice twice) doble) 3
+->                                  (twice, f <- twice)
+    (g doble) 3                     (g x = twice (twice x) )
+->                                  (g, x <- doble)
+    (twice (twice doble)) 3 
+->                                  (twice, f' <- twice doble)
+    g 3                             (g' x' = twice doble (twice doble x'))
+->                                  (g', x' <- 3)
+    twice doble (twice doble 3)
+->                                  (twice, f'' <- doble)
+    twice doble (g 3)               (g'' x'' = doble (doble x''))
+->                                  (g, x'' <- 3)
+    twice doble (doble (doble 3))
+->                                  (doble, x <- 3)
+    twice doble (doble (3 + 3))
+->                                  (Aritmetica)
+    twice doble (doble 6)
+->                                  (doble, x' <- 6)
+    twice doble (6 + 6)
+->                                  (Aritmetica)
+    twice doble 12
+->                                  (twice, f''' <- doble)
+    g 12                            (g''' x''' = doble (doble x'''))
+->                                  (g''', x''' <- 12)
+    doble (doble 12)
+->                                  (doble, x'' <- 12)
+    doble (12 + 12)
+->                                  (Aritmetica)
+    doble 24            
+->                                  (doble, x''' <- 24)
+    24 + 24
+->                                  (Aritmetica)
+    48
 
 -- E8
 triple = (/x -> x * 3)
@@ -93,7 +130,7 @@ twice twice = (/f (/x -> f (f (f (f x)))))
 -- E9
 
 -- EA1
-
+-- a
     (\f -> f2 + f4) id
 ->                          (Beta)
     id 2 + id 4
@@ -104,7 +141,7 @@ twice twice = (/f (/x -> f (f (f (f x)))))
 ->                          (Aritmetica)
     6
 
--- EA2
+-- b
     (\f -> f2 + f4) doble
 ->                          (Beta)
     doble 2 + doble 4
@@ -115,6 +152,7 @@ twice twice = (/f (/x -> f (f (f (f x)))))
 ->                          (Aritmetica)
     12
 
+-- c
     (\f -> f2 + f4) (suma 17)
 ->                              (Beta)
     (suma 17) 2 + (suma 17) 4
@@ -128,3 +166,28 @@ twice twice = (/f (/x -> f (f (f (f x)))))
     (17 + 2) + (17 + 4)
 ->                              (Aritmetica)
     40
+
+-- EA2
+-- a
+    (suma 2) 3
+->              (suma, x <-2)
+    g 3         (g y = 2 + y)
+->              (g, y <- 3)
+    2 + 3
+->              (Aritmetica)
+    5
+
+-- b
+    ((subst const) suma) 17
+
+-- c
+    ((subst const) twice) doble
+
+-- EA3
+(subst const) suma = id
+\f -> (subst const) f = id
+
+-- EA4
+id = (\x -> x)
+const = (\x (\y -> x))
+flip = (\f -> (\x -> (\y -> (f y) x))))
