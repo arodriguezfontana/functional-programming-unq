@@ -1,12 +1,12 @@
 -- E1
-(/x -> x + x) 2
-(/x -> x + 3) 1
-(twice doble) 1
-doble (doble 1)
-cuadruple 1
-(\f -> f (f 1)) doble
-(\f -> (\g -> f (g 1))) doble doble
-(\g -> doble (g 1)) doble
+. (/x -> x + x) 2
+. (/x -> x + 3) 1
+. (twice doble) 1
+. doble (doble 1)
+. cuadruple 1
+. (\f -> f (f 1)) doble
+. (\f -> (\g -> f (g 1))) doble doble
+. (\g -> doble (g 1)) doble
 
 -- E2
     doble (doble 2)
@@ -20,15 +20,16 @@ cuadruple 1
     8
 
 --  E3
--- a
+-- cuadruple 2
     cuadruple 2
 ->                  (cuadruple, x <- 2)
     2 * 4
 ->                  (Aritmetica)
     8
 
----b
-    cuadruple (cuadruple 2) -- Interno
+-- cuadruple (cuadruple 2)
+-- Interno
+    cuadruple (cuadruple 2)
 ->                              (cuadruple, x <- 2)
     cuadruple (2 * 4)
 ->                              (Aritmetica)    
@@ -38,8 +39,9 @@ cuadruple 1
 ->                              (Aritmetica)
     32
 
--- c    
-    cuadruple (cuadruple 2) -- Externo
+-- cuadruple (cuadruple 2)
+-- Externo
+    cuadruple (cuadruple 2)
 ->                              (cuadruple, x <- cuadruple 2)
     (cuadruple 2) * 4
 ->                              (cuadruple, x <- 2) 
@@ -58,16 +60,14 @@ sumarDos :: Int -> Int
 sumarDos x = x + 2
 
 -- E5
-twice succ 2 = sumarDos 2
-
--- a
+-- sumarDos 2
     sumarDos 2
 ->              (sumarDos, x <- 2)
     2 + 2
 ->              (Aritmetica)
     4
 
--- b
+-- twice succ 2
     twice succ 2
 ->                  (twice, f <- succ)
     g 2             (g x = succ (succ x))
@@ -81,9 +81,9 @@ twice succ 2 = sumarDos 2
     4
 
 -- E6
-doble = (\x -> 2 * x)
-twice doble = cuadruple
-twice id = id
+. doble = \x -> 2 * x
+. twice doble = cuadruple
+. twice id = id
 
 -- E7
     ((twice twice) doble) 3
@@ -121,11 +121,11 @@ twice id = id
     48
 
 -- E8
-triple = (/x -> x * 3)
-succ = (/x -> x + 1)
-sumarDos = (/x -> x + 2)
-twice = (/f (/x -> f (f x)))
-twice twice = (/f (/x -> f (f (f (f x)))))
+. triple = /x -> x * 3
+. succ = /x -> x + 1
+. sumarDos = /x -> x + 2
+. twice = /f (/x -> f (f x))
+. twice twice = /f (/x -> f (f (f (f x))))
 
 -- E9
 
@@ -179,15 +179,37 @@ twice twice = (/f (/x -> f (f (f (f x)))))
 
 -- b
     ((subst const) suma) 17
+->                              (subst, f <- const)
+    (h suma) 17                 (h g = k)
+->                              (h, g <- suma)
+    k 17                        (k x, (const x) (suma x))
+->                              (k, x <- 17)
+    (const 17) (suma 17)
+->                              (const, x <- 17)
+    g (suma 17)                 (g y = 17)
+->                              (g, y <- suma 17)
+    17
 
 -- c
     ((subst const) twice) doble
+->                                  (subst, f <- const)
+    (h twice) doble                 (h g = k)
+->                                  (h, g <- twice)
+    k doble                         (k x = (const x) (twice x))
+->                                  (k, x <- doble)
+    (const doble) (twice doble)
+->                                  (const, x <- doble)
+    g (twice doble)                 (g y = doble)
+->                                  (g, y <- twice doble)
+    doble
 
 -- EA3
 (subst const) suma = id
-\f -> (subst const) f = id
+\f -> (subst const) f = 
 
 -- EA4
-id = (\x -> x)
-const = (\x (\y -> x))
-flip = (\f -> (\x -> (\y -> (f y) x))))
+id = \x -> x
+const = \x (\y -> x)
+flip = \f -> (\x -> (\y -> (f y) x)))
+
+-- EA5

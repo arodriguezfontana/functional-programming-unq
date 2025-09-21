@@ -138,6 +138,8 @@ swap ::
 (twice twice) swap :: 
 
 -- EA1
+
+-- EA2
 -- a
 doble :: Int -> Int
 x :: Int
