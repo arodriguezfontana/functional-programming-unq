@@ -174,14 +174,14 @@ g x :: b
 -- E4
 -- a
 apply :: (a -> b) -> (a -> b)
-apply :: (a -> b) -> (a -> b)
------------------------------------ (a <- (a -> b), b <- (a -> b))
-apply apply :: (a -> b) -> (a -> b)
+apply :: (c -> d) -> (c -> d)
+----------------------------------- (a <- (c -> d), b <- (c -> b))
+apply apply :: (c -> d) -> (c -> d)
 
-apply apply :: (a -> b) -> (a -> b)
-apply :: (a -> b) -> (a -> b)
-------------------------------------------- (a <- (a -> b), b <- (a -> b))
-(apply apply) apply :: (a -> b) -> (a -> b)
+apply apply :: (c -> d) -> (c -> d)
+apply :: (e -> f) -> (e -> f)
+------------------------------------------- (c <- (e -> f), d <- (e -> f))
+(apply apply) apply :: (e -> f) -> (e -> f)
 
 -- b
 twice :: (a -> a) -> (a -> a)
@@ -196,30 +196,90 @@ twice doble :: Int -> Int
 
 -- c
 twice :: (a -> a) -> (a -> a)
-twice :: (a -> a) -> (a -> a)
------------------------------------ (a <- (a -> a))
-twice twice :: (a -> a) -> (a -> a)
+twice :: (b -> b) -> (b -> b)
+----------------------------------- (a <- (b -> b))
+twice twice :: (b -> b) -> (b -> b)
 
-twice twice :: (a -> a) -> (a -> a)
-twice :: (a -> a) -> (a -> a)
-------------------------------------------- (a <- (a -> a))
-(twice twice) twice :: (a -> a) -> (a -> a)
+twice twice :: (b -> b) -> (b -> b)
+twice :: (c -> c) -> (c -> c)
+------------------------------------------- (b <- (c -> c))
+(twice twice) twice :: (c -> c) -> (c -> c)
 
-(twice twice) twice :: (a -> a) -> (a -> a)
-swap :: (a,b) -> (b,a)
--------------------------------------------- (b <- a, a <- (a,a))
-((twice twice) twice) swap :: (a,a) -> (a,a)
+(twice twice) twice :: (c -> c) -> (c -> c)
+swap :: (d,e) -> (e,d)
+-------------------------------------------- (d <- e, c <- (e,e))
+((twice twice) twice) swap :: (e,e) -> (e,e)
 
 -- d
-flip :: (a -> (b -> c)) -> (b -> (a -> c))
-twice :: (a -> a) -> (a -> a)
------------------- ((b -> c) <- a, a <- (a -> a))
-flip twice ::
+flip :: (a -> (b -> c)) -> (b -> ((d -> d) -> c))
+twice :: (d -> d) -> (d -> d)
+---------------------------------- ((b -> c) <- a, a <- (d -> d))
+flip twice :: b -> ((d -> d) -> c)
 
-flip twice :: Int ->
+flip twice :: b -> ((d -> d) -> c)
 1 :: Int
-(flip twice) 1 ::
+---------------------------------- (b <- int)
+(flip twice) 1 :: (d -> d) -> c
 
-(flip twice) 1 :: (Int -> Int) ->
+(flip twice) 1 :: (d -> d) -> c
 doble :: Int -> Int
-((flip twice) 1) doble :: 
+---------------------------- (d <- Int)
+((flip twice) 1) doble :: c
+
+-- E5
+. appDup = \f -> (\x -> f (x,x))
+. appFork = \(f, g) -> (\x -> (f x, g x))
+. appPar = \(f, g) -> (\(x, y) -> (f x, g y))
+. appDist = \f -> (\(x, y) -> (f x, f y))
+. subst = \f -> (\g -> (\x -> (f x) (g x)))
+
+-- E6
+
+-- E7
+
+-- E8
+-- a
+(Int -> Int) -> (Int -> Int)
+-- Es una función que . dada una funcion que toma un entero y devuelve un entero . devuelve una funcion que toma un entero y devuelve un entero.
+(Int -> Int) -> Int -> Int
+-- Es una función que . dada una funcion que toma un entero y devuelve un entero . y un entero . devuelve un entero.
+
+-- b
+(a -> (b -> c)) -> (a -> b) -> c
+-- Es una función que . dada una funcion que toma un a y devuelve otra funcion que toma un b y devuelve un c . y una funcion que toma un a y devuelve un b . devuelve un c.
+(a -> b -> c) -> (a -> b) -> c
+-- Es una función que . dada una funcion que toma un a y un b y devuelve un c . y una funcion que toma un  a y devuelve un b. devuelve un c.
+
+-- c
+(a -> b, c -> d) -> ((a, c) -> (b, d))
+-- Es una función que . dada una funcion que toma una tupla (funcion que toma un a y devuelve un b, funcion que toma un c y devuelve un d) . devuelve una funcion que toma una tupla (a,c) y devuelve una tupla (b,d).
+(a -> b, c -> d) -> (a, c) -> (b, d)
+-- Es una función que . dada una funcion que toma una tupla (funcion que toma un a y devuelve un b, funcion que toma un c y devuelve un d) . y una tupla (a,c) . devuelve una tupla (b,d).
+
+-- d
+((a, a) -> b) -> (a -> b)
+-- Es una función que . dada una funcion que toma una tupla (a,a) y devuelve un b . devuelve una funcion que toma un a y devuelve un b.
+((a, a) -> b) -> a -> b
+-- Es una función que . dada una funcion que toma una tupla (a,a) y devuelve un b . y un a . devuelve un b.
+
+-- e
+(a -> (b -> c)) -> (b -> (a -> c))
+-- Es una funcion que . dada una funcion que toma un a y devuelve otra funcion que toma un b y devuelve un c . devuelve una funcion que toma un b y devuelve una funcion que toma un a y devuelve un c.
+(a -> b -> c) -> b -> a -> c
+-- Es una funcion que . dada una funcion que toma un a y un b y devuelve un c . y un b . y un a . devuelve un c. 
+
+-- f
+(a -> b) -> ((a, a) -> (b, b))
+-- Es una funcion que . dada una funcion que toma un a y devuelve un b . devuelve una funcion que toma una tupa (a,a) y devuelve una tupla (b,b).
+(a -> b) -> (a, a) -> (b, b)
+-- Es una funcion que . dada una funcion que toma un a y devuelve un b . y una tupa (a,a) . devuelve una tupla (b,b).
+
+-- g
+(a -> b, a -> c) -> (a -> (b, c))
+-- Es una funcion que . dada una tupla (funncion que toma un a y devuelve un b, funcion que toma un a y devuelve un c) . devuelve una funcion que toma un a y devuelve una tupla (b,c).
+(a -> b, a -> c) -> a -> (b, c)
+-- Es una funcion que . dada una tupla (funncion que toma un a y devuelve un b, funcion que toma un a y devuelve un c) . y un a . devuelve una tupla (b,c).
+
+-- h
+. (a -> (b -> c)) -> ((a -> b) -> (a -> c))
+. a -> b -> a
