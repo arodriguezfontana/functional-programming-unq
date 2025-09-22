@@ -246,7 +246,7 @@ doble :: Int -> Int
 
 -- b
 (a -> (b -> c)) -> (a -> b) -> c
--- Es una función que . dada una funcion que toma un a y devuelve otra funcion que toma un b y devuelve un c . y una funcion que toma un a y devuelve un b . devuelve un c.
+-- Es una función que . dada una funcion que toma un a y devuelve una funcion que toma un b y devuelve un c . y una funcion que toma un a y devuelve un b . devuelve un c.
 (a -> b -> c) -> (a -> b) -> c
 -- Es una función que . dada una funcion que toma un a y un b y devuelve un c . y una funcion que toma un  a y devuelve un b. devuelve un c.
 
@@ -264,7 +264,7 @@ doble :: Int -> Int
 
 -- e
 (a -> (b -> c)) -> (b -> (a -> c))
--- Es una funcion que . dada una funcion que toma un a y devuelve otra funcion que toma un b y devuelve un c . devuelve una funcion que toma un b y devuelve una funcion que toma un a y devuelve un c.
+-- Es una funcion que . dada una funcion que toma un a y devuelve una funcion que toma un b y devuelve un c . devuelve una funcion que toma un b y devuelve una funcion que toma un a y devuelve un c.
 (a -> b -> c) -> b -> a -> c
 -- Es una funcion que . dada una funcion que toma un a y un b y devuelve un c . y un b . y un a . devuelve un c. 
 
@@ -281,5 +281,13 @@ doble :: Int -> Int
 -- Es una funcion que . dada una tupla (funncion que toma un a y devuelve un b, funcion que toma un a y devuelve un c) . y un a . devuelve una tupla (b,c).
 
 -- h
-. (a -> (b -> c)) -> ((a -> b) -> (a -> c))
-. a -> b -> a
+(a -> (b -> c)) -> ((a -> b) -> (a -> c))
+-- Es una funcion que . dada una funcion que toma un a y devuelve una funcion que toma un b y devuelve un c . devuelve una funcion, que toma una funcion que toma a y devuevle b, y devuelve una funcion que toma un a y devuelve un c.
+(a -> b -> c) -> (a -> b) -> (a -> c)
+-- Es una funcion que . dada una funcion que toma un a y un b y devuelve un c . y una funcion que toma a y devuevle b . devuelve una funcion que toma un a y devuelve un c.
+
+-- i
+a -> (b -> a)
+-- Es una funcion que . dado un a . devuelve una funcion que toma un b y devuelve un a.
+a -> b -> a
+-- Es una funcion que . dado un a . y un b . devuelve un a.
