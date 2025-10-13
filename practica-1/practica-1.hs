@@ -213,7 +213,6 @@ const = \x -> (\y -> x)
 flip = \f -> (\x -> (\y -> (f y) x)))
 
 -- a5
-yTambien :: Bool -> Bool -> Bool
 yTambien b = if b
                 then id
                 else const False
