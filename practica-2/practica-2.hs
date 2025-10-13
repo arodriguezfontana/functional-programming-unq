@@ -112,30 +112,105 @@ twice doble :: Int -> Int
 -- d
 twice :: (a -> a) -> (a -> a)
 twice :: (b -> b) -> (b -> b)
------------------------------------- (a <- (b -> b))
+----------------------------------- (a <- (b -> b))
 twice twice :: (b -> b) -> (b -> b)
 
 -- e
 twice :: (a -> a) -> (a -> a) 
 uflip :: ((c,b) -> d) -> ((b,c) -> d)
---------------------
-twice uflip :: 
+------------------------------------------- (c <- b, a <- ((b,b) -> d))
+twice uflip :: ((b,b) -> d) -> ((b,c) -> d)
 
 -- f
 twice :: (a -> a) -> (a -> a) 
 swap :: (b,c) -> (c,b)
---------------------- (
-twice swap :: 
+---------------------------- (c <- b, a <- (b,b))
+twice swap :: (b,b) -> (b,b)
 
 -- g
 uflip :: ((b,a) -> c) -> ((a,b) -> c)
-swap :: (a,b) -> (b,a)
-uflip swap ::
+swap :: (d,e) -> (e,d)
+---------------------------- (b <- d, a <- e, c <- (e,d))
+uflip swap :: (e,d) -> (e,d)
 
 -- h
-twice twice ::
-swap ::
-(twice twice) swap :: 
+twice twice :: (a -> a) -> (a -> a)
+swap :: (b,c) -> (c,b)
+------------------------------------ (c <- b, a <- (b,b))
+(twice twice) swap :: (b,b) -> (b,b)
+
+-- E3
+const :: a -> b -> a -- VII
+const x y = x
+
+appDup :: ((a,a) -> b) -> a -> b -- II
+appDup f x = f (x, x)
+
+appFork :: (a -> b, a -> c) -> a -> (b,c) -- V
+appFork (f,g) x = (f x, g x)
+
+appPar :: (a -> b, c -> d) -> (a,c) -> (b,d) -- I
+appPar (f,g) (x,y) = (f x, g y)
+
+appDist :: (a -> b) -> (a,a) -> (b,b) -- IV
+appDist f (x,y) = (f x, f y)
+
+flip :: (a -> b -> c) -> b -> a -> c -- III
+flip f x y = f y x
+
+subst :: (a -> b -> c) -> (a -> b) -> a -> c -- VI
+subst f g x = f x (g x)
+
+-- E4
+-- a
+
+-- E5
+True
+False
+
+(1,2)
+(3,4)
+
+posicionEnAbecedario 'a'
+posicionEnVocales 'e'
+
+esPosicionEnAbecedario (1,'a')
+esPosicionEnVocales (2,'e')
+
+sumoUno doble 1
+restoUno cuadruple 2
+
+(esFalso Falso, 1)
+(esVerdadero True, 2)
+
+esBooleano 10
+esUn10 'a'
+
+-- E6
+-- a
+\p -> let (f, g) = p
+        in \x -> (f x, g x) -- V
+
+-- b
+\f -> (\g -> (\x -> f x (g x))  --VI
+
+-- c
+\f -> (\x -> (\y -> (f y) x) -- III
+
+-- d
+\f -> (\px -> let (x, y) = px
+                in (f x, f y)) -- IV
+
+-- e
+\x -> (\y -> x) -- VII
+
+-- f
+ \pf -> let (f, g) = pf
+            in \px -> let (x, y) = px
+                        in (f x, g y) -- I
+
+-- g
+\f -> (\x -> f (x, x)) -- II
 
 -- EA1
 
@@ -153,24 +228,24 @@ x + x :: Int
 -- b
 id :: a -> a
 x :: a
+----------
 id x :: a
-
-x :: a
 
 -- c
 apply :: (a -> b) -> (a -> b)
 f :: a -> b
+-----------------
 apply f :: a -> b 
  
 g :: a -> b
 x :: a
+--------
 g x :: b
 
 f :: a -> b
 x :: a
+--------
 f x :: b
-
-x :: a
 
 -- d
 suma x :: Int -> Int
@@ -180,7 +255,7 @@ suma x y :: Int
 
 suma :: Int -> Int -> Int 
 x :: Int
-----------
+--------------------
 suma x :: Int -> Int
 
 x :: Int
@@ -198,8 +273,6 @@ g :: b -> a
 y :: b
 ---------
 g y :: a
-
-x :: a
 
 -- f
 compose :: (b -> c) -> ((a -> b) -> (a -> c))
@@ -230,48 +303,56 @@ g x :: b
 -- g
 flip :: a -> (b -> c) -> (b -> (a -> c))
 f :: a -> (b -> c)
-------------------
+-----------------------
 flip f :: b -> (a -> c)
 
 g :: b -> (a -> c)
 x :: b
----------------
+-------------
 g x :: a -> c
 
 h :: a -> c
 y :: a
+--------
 h y :: c
 
 f y :: b -> c
 x :: b
+------------
 (f y) x :: c
 
 f :: a -> (b -> c)
 y :: a
+-------------
 f y :: b -> c
 
 -- h
 subst :: (a -> (b -> c)) -> ((a -> b) -> (a -> c))
 f :: a -> (b -> c)
+-----------------------------
 subst f :: (a -> b) -> a -> c
 
 h :: (a -> b) -> (a -> c)
 g :: a -> b
+-------------
 h g :: a -> c
 
 k :: a -> c
 x :: a
+--------
 k x :: c
 
 f x :: b -> c
 g x :: b
+----------------
 (f x) (g x) :: c
 
 f :: a -> (b -> c)
 x :: a
+-------------
 f x :: b -> c
 
 g :: a -> b
 x :: a
------------
+--------
 g x :: b
