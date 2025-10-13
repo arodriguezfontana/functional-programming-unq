@@ -1,75 +1,82 @@
 -- E1
--- Total: Te doy algo que no es bottom y me devolves algo que no es bottom
--- Parcial: Te doy algo que no es bottom y me devolves bottom
--- No estricta: Te doy bottom y me devolves algo que no es bottom
--- Estricta: Te doy bottom y me devolves bottom
-
 -- a
 udiv (x,y) = div x y
--- Parcial
--- Falla si el segundo componente de la tupla es 0.
+-- Parcial, falla si el segundo componente de la tupla es 0.
 
 -- b
 udivE (x,0) = error "No puedo dividir por 0"
 udivE (x,y) = div x y
--- Parcial
--- Maneja la falla pero lanzando un error, no un valor de tipo valido.
+-- Parcial, maneja el caso pero lanzando un error, no un valor de tipo valido.
 
 -- c
 udivH = uncurry div
--- Parcial
--- Falla si el segundo valor que recibe div es 0.
+-- Parcial, falla si el segundo valor que recibe div es 0.
 
 -- d
 succ x = x + 1
--- Total
--- Definida para todos los valores de su dominio.
+-- Total, definida para todos los valores de su dominio.
 
 -- e
 succH = suma 1
--- Total
--- Definida para todos los valores de su dominio.
-
--- e
-porLaMitad = flip div 2
--- Total
--- La division por 2 esta definida para todos los valores de su dominio.
+-- Total, definida para todos los valores de su dominio.
 
 -- f
-conDieresis 'u' = 'ü'
--- Parcial
--- Definida solo para el caracter 'u', si le paso otro devuelve bottom.
+porLaMitad = flip div 2
+-- Total, definida para todos los valores de su dominio.
 
 -- g
-conDieresisB 'u' = 'ü'
-conDieresisB c = conDieresisB c
--- Parcial
--- Solo devuelve algo valido para el caracter 'u', si le paso otro genera una recursión infinita, por ende, bottom.
+conDieresis 'u' = 'ü'
+-- Parcial, definida solo para el caracter 'u', sino devuelve bottom.
 
 -- h
+conDieresisB 'u' = 'ü'
+conDieresisB c = conDieresisB c
+-- Parcial, definida solo para el caracter 'u', sino genera una recursión infinita, por ende, bottom.
+
+-- i
 conTildePM 'a' = 'á'
 conTildePM 'e' = 'é'
 conTildePM 'i' = 'í'
 conTildePM 'o' = 'ó'
 conTildePM 'u' = 'ú'
--- Parcial
--- Falla si le paso un caracter que no es vocal minuscula porque no hay definición, por ende, bottom.
+-- Parcial, definida solo para las vocales minusculas, sino devuelve bottom.
 
 -- j
 conTildeE c = if esVocal c
     then conTildePM c
     else error "El valor recibido no es vocal"
--- Parcial
--- Maneja el caso pero lanzando un error.
+-- Parcial, maneja el caso pero lanzando un error, no un valor de tipo valido.
 
 -- k
 conTilde c = if esVocal c && esMinuscula c
     then conTildePM c
     else c
--- Total
--- Definida para todos los valores
+-- Total, definida para todos los valores de su dominio.
 
 -- E2
--- a = c, d = e, i = j
+-- a = c, d = e
 
 -- E3
+twice doble -- 1 (twice doble)
+twice doble 2 -- 4 (twice doble, (\x -> doble (doble x)) 2, doble 2, doble 4)
+twice -- 0
+
+-- E4
+twice doble -- 1 (twice doble)
+twice doble 2 -- 4 (twice doble, g 2, doble 2, doble 4)
+twice -- 0
+
+-- E5
+twice doble -- 1 (twice doble)
+twice doble 2 -- 3 (twice doble 2, doble 2, doble 4)
+twice -- 0
+
+-- E6
+-- En todos los casos, los tipos son demasiado generales (polimórficos)
+-- como para construir valores concretos distintos de ⊥.
+-- Por eso, no hay dos expresiones diferentes y definidas que los habiten.
+
+-- EA1
+-- EA2
+-- EA3
+-- EA4

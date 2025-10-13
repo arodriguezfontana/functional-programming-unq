@@ -1,14 +1,14 @@
--- E1
-. (/x -> x + x) 2
-. (/x -> x + 3) 1
-. (twice doble) 1
-. doble (doble 1)
-. cuadruple 1
-. (\f -> f (f 1)) doble
-. (\f -> (\g -> f (g 1))) doble doble
-. (\g -> doble (g 1)) doble
+-- 1
+(/x -> x + x) 2
+(/x -> x + 3) 1
+(twice doble) 1
+doble (doble 1)
+cuadruple 1
+(\f -> f (f 1)) doble
+(\f -> (\g -> f (g 1))) doble doble
+(\g -> doble (g 1)) doble
 
--- E2
+-- 2
     doble (doble 2)
 ->                      (doble, x <- doble 2)
     doble 2 + doble 2
@@ -19,16 +19,15 @@
 ->                      (Aritmetica)
     8
 
---  E3
--- cuadruple 2
+--  3
+-- a
     cuadruple 2
 ->                  (cuadruple, x <- 2)
     2 * 4
 ->                  (Aritmetica)
     8
 
--- cuadruple (cuadruple 2)
--- Interno
+-- b
     cuadruple (cuadruple 2)
 ->                              (cuadruple, x <- 2)
     cuadruple (2 * 4)
@@ -39,8 +38,7 @@
 ->                              (Aritmetica)
     32
 
--- cuadruple (cuadruple 2)
--- Externo
+-- c
     cuadruple (cuadruple 2)
 ->                              (cuadruple, x <- cuadruple 2)
     (cuadruple 2) * 4
@@ -49,7 +47,7 @@
 ->                              (Aritmetica)
     32              
 
--- E4
+-- 4
 triple :: Int -> Int
 triple x = x * 3
 
@@ -59,33 +57,31 @@ succ x = x + 1
 sumarDos :: Int -> Int
 sumarDos x = x + 2
 
--- E5
--- sumarDos 2
-    sumarDos 2
-->              (sumarDos, x <- 2)
-    2 + 2
-->              (Aritmetica)
-    4
+-- 5
+-- a
+    sumarDos n
+->              (sumarDos, x <- n)
+    n + 2
 
--- twice succ 2
-    twice succ 2
+-- b
+    twice succ n
 ->                  (twice, f <- succ)
-    g 2             (g x = succ (succ x))
-->                  (g, x <- 2)
-    succ (succ 2)
-->                  (succ, x <- 2)
-    succ 2 + 1
-->                  (succ, x <- 2)
-    2 + 1 + 1
+    g n             (g x = succ (succ x))
+->                  (g, x <- n)
+    succ (succ n)
+->                  (succ, x <- n)
+    succ n + 1
+->                  (succ, x <- n)
+    n + 1 + 1
 ->                  (Aritmetica)
-    4
+    n + 2
 
--- E6
-. doble = \x -> 2 * x
-. twice doble = cuadruple
-. twice id = id
+-- 6
+doble = \x -> 2 * x
+twice doble = cuadruple
+twice id = id
 
--- E7
+-- 7
     ((twice twice) doble) 3
 ->                                  (twice, f <- twice)
     (g doble) 3                     (g x = twice (twice x) )
@@ -120,16 +116,20 @@ sumarDos x = x + 2
 ->                                  (Aritmetica)
     48
 
--- E8
-. triple = /x -> x * 3
-. succ = /x -> x + 1
-. sumarDos = /x -> x + 2
-. twice = /f (/x -> f (f x))
-. twice twice = /f (/x -> f (f (f (f x))))
+-- 8
+triple = /x -> x * 3
+succ = /x -> x + 1
+sumarDos = /x -> x + 2
+twice = /f (/x -> f (f x))
+twice twice = /f (/x -> f (f (f (f x))))
 
--- E9
+-- 9
+f x = x
+f (x,y) = x
+f (x,y) = x
+f (x,y) = y
 
--- EA1
+-- a1
 -- a
     (\f -> f2 + f4) id
 ->                          (Beta)
@@ -167,7 +167,7 @@ sumarDos x = x + 2
 ->                              (Aritmetica)
     40
 
--- EA2
+-- a2
 -- a
     (suma 2) 3
 ->              (suma, x <-2)
@@ -203,13 +203,17 @@ sumarDos x = x + 2
 ->                                  (g, y <- twice doble)
     doble
 
--- EA3
+-- a3
 (subst const) suma = id
-\f -> (subst const) f = 
+\f -> (subst const) f = const id
 
--- EA4
+-- a4
 id = \x -> x
-const = \x (\y -> x)
+const = \x -> (\y -> x)
 flip = \f -> (\x -> (\y -> (f y) x)))
 
--- EA5
+-- a5
+yTambien :: Bool -> Bool -> Bool
+yTambien b = if b
+                then id
+                else const False

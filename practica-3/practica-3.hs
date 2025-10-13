@@ -1,5 +1,9 @@
 -- E1
+curry :: ((a,b) -> c) -> a -> b -> c
+curry f x y = f (x,y)
 
+uncurry :: (a -> b -> c) -> (a,b) -> c
+uncurry f (x,y) = f x y
 
 -- E2
 -- a
@@ -236,6 +240,9 @@ doble :: Int -> Int
 -- E6
 
 -- E7
+many :: Int -> (a -> a) -> a -> a
+many 0 f = id f
+many n f = f . (many (n-1) f)
 
 -- E8
 -- a
@@ -291,3 +298,8 @@ a -> (b -> a)
 -- Es una funcion que . dado un a . devuelve una funcion que toma un b y devuelve un a.
 a -> b -> a
 -- Es una funcion que . dado un a . y un b . devuelve un a.
+
+-- E9
+cuadruple x = doble (doble x) = doble . doble
+timesTwoPlusThree x = suma (doble x) 3 = flip suma 3 . doble
+fourTimes f x = f (f (f (f x))) = twice . twice
