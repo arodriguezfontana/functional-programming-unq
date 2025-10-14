@@ -228,7 +228,7 @@ flip twice :: b -> ((d -> d) -> c)
 (flip twice) 1 :: (d -> d) -> c
 doble :: Int -> Int
 ---------------------------- (d <- Int)
-((flip twice) 1) doble :: c
+((flip twice) 1) doble :: Int
 
 -- E5
 . appDup = \f -> (\x -> f (x,x))
