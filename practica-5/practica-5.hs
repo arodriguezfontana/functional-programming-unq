@@ -122,7 +122,9 @@ compose uncurry (Pote Chocolate) -- No posee tipo
 (compose uncurry Pote) Chocolate (Vainilla, Frutilla)
 (compose Just) doble
 
--- 
+-- 7
+
+-- 8
 
 -- A1
 cuadrado :: Float -> Shape
