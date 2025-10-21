@@ -219,10 +219,10 @@ appDup appFork -- No tiene tipo válido
 flip (appDup const) = \x -> \y -> (y, y)
 const (appDup id) = \y -> \x -> (x,x)
 
--- A1
+-- a1
 yTambien :: Bool -> Bool -> Bool
 
--- A2
+-- a2
 -- a
 doble :: Int -> Int
 x :: Int

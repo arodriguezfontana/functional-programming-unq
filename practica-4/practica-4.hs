@@ -1,4 +1,4 @@
--- E1
+-- 1
 -- a
 udiv (x,y) = div x y
 -- Parcial, falla si el segundo componente de la tupla es 0.
@@ -53,30 +53,30 @@ conTilde c = if esVocal c && esMinuscula c
     else c
 -- Total, definida para todos los valores de su dominio.
 
--- E2
+-- 2
 -- a = c, d = e
 
--- E3
+-- 3
 twice doble -- 1 (twice doble)
 twice doble 2 -- 4 (twice doble, (\x -> doble (doble x)) 2, doble 2, doble 4)
 twice -- 0
 
--- E4
+-- 4
 twice doble -- 1 (twice doble)
 twice doble 2 -- 4 (twice doble, g 2, doble 2, doble 4)
 twice -- 0
 
--- E5
+-- 5
 twice doble -- 1 (twice doble)
 twice doble 2 -- 3 (twice doble 2, doble 2, doble 4)
 twice -- 0
 
--- E6
+-- 6
 -- En todos los casos, los tipos son demasiado generales (polimórficos)
 -- como para construir valores concretos distintos de ⊥.
 -- Por eso, no hay dos expresiones diferentes y definidas que los habiten.
 
--- EA1
--- EA2
--- EA3
--- EA4
+-- a1
+-- a2
+-- a3
+-- a4

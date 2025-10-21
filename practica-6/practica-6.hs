@@ -1,10 +1,11 @@
 -- 1
 -- a
 doble = \x -> 2 * x
-por ppio. de ext.:
-    para todo y. doble y = (\x -> 2 * x) y
+por principio de extensionaldiad:
+    ¿para todo y. doble y = (\x -> 2 * x) y?
 
-Sea n::Int
+sea n un Int culquiera, quiero ver que:
+    doble n = (\x -> 2 * x) n 
 
 Izq:
     doble n 
@@ -13,17 +14,18 @@ Izq:
 
 Der:
     (\x -> 2 * x) n
-=                   (Beta., x <- n)
+=                   (Beta)
     2 * n
 =                   (Aritm.)
     n + n
 
 -- b
 compose doble doble = cuadruple
-por ppio. de ext.:
-    para todo x. compose doble doble x = cuadruple x
+por principio de extensionaldiad:
+    ¿para todo x. compose doble doble x = cuadruple x?
 
-Sea n::Int
+sea n un Int cualquiera, quiero ver que:
+    compose doble doble n = cuadruple n
 
 Izq:
     compose doble doble n
@@ -45,45 +47,149 @@ Der:
 
 -- 2
 -- a
-para todo x,y. x && y = not ((not x) || (not y))
+para todo x, para todo y. x && y = not ((not x) || (not y))
 
-Sea x'::Bool
-Sea y'::Bool
+sean b y c dos Bool cualquiera, quiero ver que:
+    b && c = not ((not b) || (not c))
+por analisis de casos. 
 
+-- b = True y c = True
 Der:
-    x' && y'-- Verdadero si x' = True && y = True
+    True && True
+=                   (&&)
+    True
 
 Izq:
-    not ((not x') || (not y'))
-=                               (de morgan)
-    (not (not x')) && (not (not y'))
-=                               (doble negacion)
-    x' && y'
+    not ((not True) || (not True))
+=                                   (not)
+    not (False || False)
+=                                   (||)
+    not False
+=                                   (not)
+    True
+
+-- b = True y c = False
+Der:
+    True && False
+=                   (&&)
+    False
+
+Izq:
+    not ((not True) || (not False))
+=                                   (not)
+    not (False || True)
+=                                   (||)
+    not True
+=                                   (not)
+    False
+
+-- b = False y c = True
+Der:
+    False && True
+=                   (&&)
+    False
+
+Izq:
+    not ((not False) || (not True))
+=                                   (not)
+    not (True || False)
+=                                   (||)
+    not True
+=                                   (not)
+    False
+
+-- b = False y c = False
+Der:
+    False && False
+=                   (&&)
+    False
+
+Izq:
+    not ((not False) || (not False))
+=                                   (not)
+    not (True || True)
+=                                   (||)
+    not True
+=                                   (not)
+    False
 
 -- b
-para todo x,y. not (x || y) = not x && not y
+para todo x, para todo y. not (x || y) = not x && not y
 
-Sea x'::Bool
-Sea y'::Bool
+sean b y c dos Bool cualquiera, quiero ver que:
+    b && c = (b || c) = not b && not c
+por analisis de casos.
 
+-- b = False y c = True 
 Der:
-    not (x || y)
-=                   (de morgan)
-    x && y -- Verdadero si x' = True && y = True
+    not (False || True)
+=                       (||)
+    not True
+=                       (not)
+    False
     
 Izq:
-    not x && not y
-=                   (not)
-    x && y
+    not False && not True
+=                           (not)
+    True && False
+=                           (&&)
+    False
 
--- A1
+-- b = True y c = False 
+Der:
+    not (True || False)
+=                       (||)
+    not True
+=                       (not)
+    False
+    
+Izq:
+    not True && not False
+=                           (not)
+    False && True
+=                           (&&)
+    False
+
+-- b = False y c = False 
+Der:
+    not (False || False)
+=                       (||)
+    not False
+=                       (not)
+    True
+    
+Izq:
+    not False && not False
+=                           (not)
+    True && True
+=                           (&&)
+    True
+
+-- 3
+por principio de extensionaldiad:
+    para todo x, curry suma' x = suma x
+    para todo x, para todo y, curry suma' x y = suma x y'
+
+sean n y m dos Int cualquiera, quiero ver que:
+    curry suma' n m = suma n m
+
+    suma n m
+=               (suma)
+    n + m
+
+    curry suma' n m
+=                       (curry)
+    suma' (n,m)
+= 
+
+-- a1
 -- a
 para todo f. subst const f = id
-por ppio. de ext.:
-    para todo f, x. subst const f x = id x
+por principio de extensionaldiad:
+    para todo f, para todo x. subst const f x = id x
 
-Sea f'::(a->b)
-Sea x'::a
+sean f' una funcion cualquiera y x' un elemento cualquiera, quiero ver que:
+    subst const f' x' = id x'
 
 Izq:
     subst const f' x' 
@@ -102,10 +208,10 @@ curry fst = const
 
 por ppio. de ext.:
   para todo x. curry fst x = const x
-  para todo x,y. curry fst x y = const x y
+  para todo x, para todo y. curry fst x y = const x y
 
-Sea x'::a
-Sea y'::b
+sean x' e y' elementos cualquiera, quiero ver que:
+    curry fst x' y' = const x' y'
 
 Izq:
     curry fst x' y'
