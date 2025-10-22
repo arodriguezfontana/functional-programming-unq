@@ -126,7 +126,7 @@ compose uncurry (Pote Chocolate) -- No posee tipo
 
 -- 8
 
--- A1
+-- a1
 cuadrado :: Float -> Shape
 cuadrado n = Rect n n
 
@@ -142,7 +142,7 @@ string2gusto "Chocolate" = Chocolate
 armarHeladoCon :: (String -> Gusto) -> Helado
 armarHeladoCon sg = Vasito (sg "Chocolate")
 
--- A2 (Falta reducir)
+-- a2 (Falta reducir)
 shapeNormal Circle :: Shape
 shapeNormal cuadrado :: Shape
 shapeNormal Rect :: Float -> Shape
@@ -161,20 +161,20 @@ armarHeladoCon string2gusto :: Helado
 armarHeladoCon error :: Helado
 esVasito (armarHeladoCon error) :: Bool
 
--- A3
+-- a3
 esCuadrado :: Shape -> Bool
 siempreArmaCuadradoDeMedida :: Float -> (Float -> Shape) -> Bool
 siempreArmaCuadrado :: (Float -> Shape) -> Bool
 
--- A4
+-- a4
 siempreArmaCuadrado cuadrado
 siempreArmaCuadrado (Rect 2)
 siempreArmaCuadrado (shapeNormal Rect)
 
--- A5
+-- a5
 Par Bool
 Par Helado
 Par (Gusto -> Helado)
 
--- A6
+-- a6
 DosCosas (Cucurucho Chocolate)

@@ -166,21 +166,129 @@ Izq:
     True
 
 -- 3
+-- a
 por principio de extensionaldiad:
-    para todo x, curry suma' x = suma x
-    para todo x, para todo y, curry suma' x y = suma x y'
+    ¿para todo x, curry suma' x = suma x?
+    ¿para todo x, para todo y, curry suma' x y = suma x y'?
 
 sean n y m dos Int cualquiera, quiero ver que:
     curry suma' n m = suma n m
 
+Izq:
+    curry suma' n m
+=                       (curry)
+    suma' (n,m)
+=                       (suma')
+    n + m
+
+Der:
     suma n m
 =               (suma)
     n + m
 
-    curry suma' n m
-=                       (curry)
+-- b
+por principio de extensionaldiad:
+    ¿para todo x, uncurry suma x = suma' x?
+    ¿para todo x, para todo y, uncurry suma (x,y) = suma' (x,y)?
+
+sean n y m dos Int cualquiera, quiero ver que:
+    uncurry suma (n,m) = suma' (n,m)
+
+Izq:
+    uncurry suma (n,m) = suma' (n,m)
+=                                       (uncurry)
+    suma n m
+=                                       (suma)
+    n + m
+
+Der:
     suma' (n,m)
-= 
+=               (suma')
+    n + m
+
+-- 4
+-- a
+por ppio. de ext.:
+  para todo x. curry fst x = const x
+  para todo x, para todo y. curry fst x y = const x y
+
+sean x' e y' elementos cualquiera, quiero ver que:
+    curry fst x' y' = const x' y'
+
+Izq:
+    curry fst x' y'
+=                   (curry)
+    fst (x', y')
+=                   (fst)
+    x'
+
+Der: 
+    const x' y'
+=               (const)
+    x'
+
+-- b
+por ppio. de ext.:
+  para todo x. uncurry (flip const) x = snd x
+  para todo x, para todo y. uncurry (flip const) (x,y) = snd (x,y)
+
+sean a y b elementos cualquiera, quiero ver que:
+    uncurry (flip const) (a,b) = snd (a,b)
+
+Izq:
+    uncurry (flip const) (a,b)
+=                               (uncurry)
+    flip const a b
+=                               (flip)
+    const b a
+=                               (const)
+    b 
+
+Der:
+    snd (a,b)
+=               (snd)
+    b
+
+-- 5
+-- a
+para todo f. curry (uncurry f) = f
+    para todo f. para todo x. curry (uncurry f) x = f x
+    para todo f. para todo x. para todo y. curry (uncurry f) x y = f x y
+
+sea g una funcion cualquiera y a y b elementos cualquiera, quiero ver que:
+    curry (uncurry g) a b = g a b
+
+Izq:
+    curry (uncurry g) a b
+=                           (curry)
+    uncurry g (a,b)
+=                           (uncurry)
+    g a b
+    
+Der:
+    g a b
+
+-- b
+para todo f'. uncurry (curry f') = f'
+    para todo f'. para todo x. uncurry (curry f') x = f' x
+    para todo f'. para todo x. para todo y. uncurry (curry f') (x,y) = f' (x,y)
+
+sea g una funcion cualquiera y a y b elementos cualquiera, quiero ver que:
+    uncurry (curry g) (a,b) = g (a,b)
+
+Izq:
+    uncurry (curry g) (a,b)
+=                               (uncurry)
+    curry g a b 
+=                               (curry)
+    g (a,b)
+
+Der:
+    g (a,b)
+
+-- 6
+
+-- 7
 
 -- a1
 -- a
