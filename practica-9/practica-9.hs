@@ -2,7 +2,7 @@
 data EA = Const Int | BOp BinOp EA EA
 data BinOp = Sum | Mul
 
--- a
+-- 2
 
 -- 3
 --  a
@@ -59,3 +59,9 @@ laDeMayorLongitud xs ys = if longitud xs > longitud ys
                            else ys
 
 todosLosCaminos :: Tree a -> [[a]]
+
+-- 4
+-- 5
+
+-- a1
+-- a2

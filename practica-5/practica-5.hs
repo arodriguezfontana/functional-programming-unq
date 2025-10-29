@@ -123,7 +123,6 @@ compose uncurry (Pote Chocolate) -- No posee tipo
 (compose Just) doble
 
 -- 7
-
 -- 8
 
 -- a1

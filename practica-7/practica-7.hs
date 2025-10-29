@@ -1,11 +1,12 @@
--- 1
+-- S1
+--1
 -- Regla Base:
     Prepizza esta en Pizza.
 
 -- Regla Inductiva:
     Si p esta en Pizza
     e i esta en Ingrediente,
-    Capa i p esta en 
+    Capa i p esta en Pizza.
     
 -- 2
 f :: Pizza -> a
@@ -175,3 +176,17 @@ Der:
     17 + 0
 =                                               (Aritm.)
     17
+
+-- S2
+-- 1
+-- 2
+-- 3
+-- 4
+-- 5
+
+-- S3
+-- 1
+-- 2
+-- 3
+-- 4
+-- 5

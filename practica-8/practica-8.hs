@@ -1,3 +1,4 @@
+-- S1
 -- 1
 length :: [a] -> Int
 length [] = 0
@@ -18,3 +19,16 @@ concat (xs:xss) = xs ++ concat xss
 elem :: Eq a => a -> [a] -> Bool
 elem _ [] = False
 elem e (x:xs) = (e == x) || elem e xs
+
+-- 2
+
+-- S2
+-- 1
+-- 2
+-- 3
+-- 4
+-- 5
+
+-- S3
+-- 1
+-- 2
