@@ -104,10 +104,10 @@ reverse (x:xs) = reverse xs ++ [x]
 zip :: [a] -> [b] -> [(a,b)]
 zip [] _ = []
 zip _ [] = []
-zip (x:xs) (y:ys) = (x,y) : (zip xs ys)
+zip (x:xs) (y:ys) = (x,y) : zip xs ys
 
 unzip :: [(a,b)] -> ([a],[b])
-unzip [] = []
+unzip [] = ([], [])
 unzip ((x,y):xys) = let (xs, ys) = (unzip xys) 
                         in (x:xs, y:ys)
 

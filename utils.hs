@@ -28,34 +28,29 @@ curry f x y = f (x,y)
 uncurry :: (a -> b -> c) -> (a,b) -> c
 uncurry f (x,y) = f x y
 
-Por ppio. de ext.:
-para todo .
+por ppio. de ext.:
+para todo , :
     ¿?
 
-Sea  un  cualquiera (finito y totalmente definido),
+sea cualquiera, finit y totalmente definid,
 quiero ver que:
     ¿?
 
-Por ppio. de ind. en la estructura de ,
-es equivalente a demostar:
-    Caso base, = :
+por ppio. de ind. sobre la estructura ,
+es eq. a demostrar:
+    CB, =:
         ¿?
-
-I:
-
-D:
-
-Caso base demostrado.
-   
-    Caso ind,  = :
+    CI, =:
         HI: ¡!
         TI: ¿?
 
-I:
+CB.i:
+CB.d:
+cb demostrado.
 
-D:
-
-Caso ind. demostrado.
+CI.i:
+CI.d:
+ci demostrado.
 
 any :: (a -> Bool) -> [a] -> Bool
 any p xs = foldr (\x r -> p x || r) False xs

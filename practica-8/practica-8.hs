@@ -150,7 +150,6 @@ if True
 -- (eval. if)
 1 + length bs
 
-
 D:
 length (b:bs)
 -- (length)
@@ -158,7 +157,7 @@ length (b:bs)
 
 Caso ind. demostrado.
 
--- 3
+-- c
 Por ppio. de ext.:
 para todo x.
     ¿elem x = any . (==) x?
@@ -208,7 +207,7 @@ a == c || elem a cs
 
 Caso ind. demostrado.
 
--- 4
+-- d
 para todo x.
     ¿any (elem x) = elem x . concat?
 Por ppio. de ext.:
@@ -440,7 +439,59 @@ False && null ds
 False
 
 -- g
-length = length . reverse
+por ppio. de ext.:
+para todo xs, :
+    ¿length xs = length . reverse xs?
+-- (.)
+    ¿length xs = length (reverse xs)?
+
+sea ws una lista cualquiera, finita y totalmente definida,
+quiero ver que:
+    ¿length ws = length (reverse ws)?
+
+por ppio. de ind. sobre la estructura ws,
+es eq. a demostrar:
+    CB, ws=[]:
+        ¿length [] = length (reverse [])?
+    CI, ws=(w:ws'):
+        HI: ¡length ws' = length (reverse ws')!
+        TI: ¿length (w:ws') = length (reverse (w:ws'))?
+
+CB.i:
+length []
+-- length.1
+0
+
+CB.d:
+length (reverse [])
+-- reverse.1
+length []
+-- length.1
+0
+
+cb demostrado.
+
+CI.i:
+length (w:ws')
+-- length
+1 + length ws'
+
+CI.d:
+length (reverse (w:ws'))
+-- reverse
+length (reverse ws' ++ [w])
+-- lema.a
+length (reverse ws') + length [w]
+-- hi
+length ws' + length [w]
+-- length
+length ws' + 1 + length []
+-- length
+length ws' + 1 + 0
+-- aritm. conmutatividad +
+1 + length ws'
+
+ci demostrado.
 
 -- h
 Por ppio. de ext.:
@@ -494,12 +545,166 @@ D:
 Caso ind. demostrado.
 
 -- i
-para todo xs. para todo ys.
+para todo xs, ys.
     ¿all p (xs++ys) = all p (reverse xs) && all p (reverse ys)?
+
+sea ws, zs dos listas cualquiera, finitas y totalmente definidas,
+quiero ver que:
+    ¿all p (ws++zs) = all p (reverse ws) && all p (reverse zs)?
+
+por ppio. de ind. sobre la estructura ws,
+es eq. a demostrar:
+    CB, ws=[]:
+        ¿all p ([]++zs) = all p (reverse []) && all p (reverse zs)?
+    CI, ws=(w:ws'):
+        HI: ¡all p (ws'++zs) = all p (reverse ws') && all p (reverse zs)!
+        TI: ¿all p ((w:ws')'++zs) = all p (reverse (w:ws')) && all p (reverse zs)?
+
+CB.i:
+all p ([]++zs)
+-- ++
+all p zs
+
+CB.d:
+all p (reverse []) && all p (reverse zs)
+-- reverse
+all p [] && all p (reverse zs)
+-- all
+True && all p (reverse zs)
+-- && con True
+all p (reverse zs)
+-- lema.1
+all p zs
+
+cb demostrado.
+
+-- lema.1
+all p (reverse xs) = all p xs 
+
+CB, xs=[]
+    ¿all p (reverse []) = all p []?
+CI, xs=(x:xs')
+    HI: ¡all p (reverse xs') = all p xs'!
+    TI: ¿all p (reverse (x:xs')) = all p (x:xs')?
+
+CB.i:
+all p (reverse [])
+-- reverse
+all p []
+
+CB.d:
+all p []
+
+cb lema 1 demostrado.
+
+CI.i:
+all p (reverse (x:xs'))
+-- reverse
+all p (reverse xs' ++ [x])
+-- lema.2
+all p (reverse xs') && all p [x]
+-- hi
+all p xs' && all p [x]
+-- all
+all p xs' && p x && all p []
+-- all
+all p xs' && p x && True
+-- &&
+all p xs' && p x 
+-- conm. &&
+p x && all p xs'
+
+CI.d:
+all p (x:xs')
+-- all
+p x && all p xs'
+
+ci lema 1 demostrado.
+
+-- lema 2
+all p (ws ++ zs) = all p ws && all p zs
+
+CB, ws=[]
+    ¿all p ([] ++ zs) = all p [] && all p zs?
+CI, ws=(w:ws')
+    HI: ¡all p (ws' ++ zs) = all p ws' && all zs!
+    TI: ¿all p ((w:ws') ++ zs) = all p (w:ws') && all zs?
+
+CB.i:
+all p ([] ++ zs)
+-- ++
+all p zs
+
+CB.d:
+all p [] && all p zs
+-- all
+True && all p zs
+-- &&
+all p zs
+
+cb lema 2 demostrado.
+
+CI.i:
+all p ((w:ws') ++ zs)
+-- ++
+all p (w : (++) ws' zs)
+-- all 
+p w && all p ((++) ws' zs)
+-- hi
+p w && all p ws' && all zs
+
+CI.d:
+all p (w:ws') && all zs
+-- all
+p w && all p ws' && all zs
+
+ci lema 2 demostrado.
+
+CI.i:
+all p ((w:ws')'++zs)
+-- ++
+all p (w : (++) ws' zs)
+-- all
+p w && all p ((++) ws' zs)
+-- hi
+p w && all p (reverse ws') && all p (reverse zs)
+
+CI.d:
+all p (reverse (w:ws')) && all p (reverse zs)
+-- lema.1
+all p (w:ws') && all p (reverse zs)
+-- all
+p w && all p ws' && all p (reverse zs)
+-- lema.1
+p w && all p (reverse ws') && all p (reverse zs)
+
+ci demostrado.
 
 -- j
 para todo xs. para todo ys. 
-    ¿unzip (zip xs ys) = (xs, ys)'
+    ¿unzip (zip xs ys) = (xs, ys)?
+
+sea ws, zs dos listas cualquiera, finitas y totalmente definidas,
+quiero ver que:
+    ¿unzip (zip ws zs) = (ws, zs)?
+
+por analisis de casos sobre la estructura ws,
+es eq. a demostrar:
+    CB, ws=[]:
+    SC, xs=(x:xs')
+    ¿unzip (zip ws zs) = (ws, zs)?
+
+CB.i:
+unzip (zip [] zs)
+-- zip
+unzip []
+-- unzip
+([], [])
+
+CB.d:
+([], zs)
+
+cb demostrado.
 
 -- S2
 -- 1
