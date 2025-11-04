@@ -304,10 +304,140 @@ e == w || elem e ws' || elem a zs
 Caso ind. demostrado.
 
 -- e
-para todo xs. para todo ys. subset xs ys = all (flip elem ys) xs
+para todo xs. para todo ys. 
+    ¿subset xs ys = all (flip elem ys) xs?
+
+Sea ws, zs listas cualquiera (finitas y totalmente definidas),
+quiero ver que:
+    ¿subset ws zs = all (flip elem zs) ws?
+
+Por ppio. de ind. en la estructura de ws,
+es equivalente a demostar:
+    Caso base, ws=[]:
+        ¿subset [] zs = all (flip elem zs) []?
+
+I:
+subset [] zs
+-- (subset.1)
+True
+
+D:
+all (flip elem zs) []
+-- (all.1)
+True
+
+Caso base demostrado.
+   
+    Caso ind, ws=(w:ws'):
+        HI: ¡subset ws' zs = all (flip elem zs) ws'!
+        TI: ¿subset (w:ws') zs = all (flip elem zs) (w:ws')?
+
+I:
+subset (w:ws') zs
+-- subset.2
+elem w zs && subset ws' zs
+-- hi.2
+elem w zs && all (flip elem zs) ws'
+
+D:
+all (flip elem zs) (w:ws')
+-- all.2
+(flip elem zs) w && all (flip elem zs) ws'
+-- flip.2
+elem w zs && all (flip elem zs) ws'
+
+Caso ind. demostrado.
 
 -- f
-all null = null . concat
+Por ppio. de ext.:
+para todo xss.
+    ¿all null xss = (null . concat) xss?
+-- (.)
+    ¿all null xss = null (concat xss)?
+
+Sea wss una lista de listas cualquiera (finita y totalmente definida),
+quiero ver que:
+    ¿all null wss = null (concat wss)?
+
+Por ppio. de ind. en la estructura de wss,
+es equivalente a demostar:
+    Caso base, wss=[]:
+        ¿all null [] = null (concat [])?
+
+I:
+all null []
+-- all.1
+True
+
+D:
+null (concat [])
+-- concat.1
+null []
+-- null.1
+True
+
+Caso base demostrado.
+   
+    Caso ind, wss=(ws:wss'):
+        HI: ¡all null wss' = null (concat wss')!
+        TI: ¿all null (ws:wss') = null (concat (ws:wss'))?
+
+I:
+all null (ws:wss')
+-- all.2
+null ws && all null wss'
+-- hi
+null ws && null (concat wss')
+
+D:
+null (concat (ws:wss'))
+-- concat.2
+null (ws ++ concat wss')
+-- lema.1
+null ws && null (concat wss')
+
+-- Lema 1
+por ppio. de ext.:
+para todo xs, ys:
+    ¿null (xs ++ ys) = null xs && null ys?
+
+sean cs y ds dos listas cualquiera, finitas y totalmente definidas,
+quiero ver que:
+    ¿null (cs ++ ds) = null cs && null ds?
+
+por ppio. de ind. sobre cs,
+es eq. a demostrar:
+    CB, cs=[]:
+        ¿null ([] ++ ds) = null [] && null ds?
+    CI, cs=(c:cs')
+        HI: ¡null (cs' ++ ds) = null cs' && null ds!
+        TI: ¿null ((c:cs') ++ ds) = null (c:cs') && null ds?
+
+CB.i:
+null ([] ++ ds)
+-- ++ 
+null ds
+
+CB.d:
+null [] && null ds
+-- null.1
+True && null ds
+-- &&
+null ds
+
+CI.i:
+null ((c:cs') ++ ds) 
+-- ++.2
+null (c : (++) cs' ds)
+-- null.2
+False
+
+CI.d:
+null (c:cs') && null ds
+-- null.2
+False && null ds
+-- &&
+False
 
 -- g
 length = length . reverse
@@ -365,10 +495,11 @@ Caso ind. demostrado.
 
 -- i
 para todo xs. para todo ys.
-all p (xs++ys) = all p (reverse xs) && all p (reverse ys)
+    ¿all p (xs++ys) = all p (reverse xs) && all p (reverse ys)?
 
 -- j
-para todo xs. para todo ys. unzip (zip xs ys) = (xs, ys)
+para todo xs. para todo ys. 
+    ¿unzip (zip xs ys) = (xs, ys)'
 
 -- S2
 -- 1
@@ -391,7 +522,7 @@ int2N 0 = Z
 int2N n = S (int2N (n-1))
 
 -- b
--- 1
+-- b1
 para todo n1, n2.
     ¿evalN (addN n1 n2) = evalN n1 + evalN n2?
 
@@ -437,7 +568,7 @@ Der:
 
 Caso ind demostrado.
 
--- 2
+-- b2
 ¿para todo n1. para todo n2.
     evalN (prodN n1 n2) = evalN n1 * evalN n2?
 
@@ -529,7 +660,7 @@ Der:
 -- = (HI)
     1 + evalN (addN n n2)
 
--- 3
+-- b3
 Por ppio. de ext.:
 para todo x.
     ¿(int2N . evalN) x = id x?
@@ -577,7 +708,7 @@ D:
 -- = (id)
     S n'
 
--- 4
+-- b4
 Por ppio. de ext.:
 para todo x.
     ¿(evalN . int2N) x = id x?
@@ -626,6 +757,100 @@ D:
     id n
 -- (id)
     n
+
+-- 2
+-- a
+evalNU :: NU -> Int
+evalNU [] = 0
+evalNU (_:xs) = 1 + evalNU xs
+
+succNU :: NU -> NU
+succNU xs = () : xs
+
+addNU :: NU -> NU -> NU
+addNU [] ys = ys
+addNU (():xs) ys = () : (addNU xs ys)
+
+nu2n :: NU -> N
+nu2n [] = Z
+nu2n (():xs) = S (nu2n xs)
+
+n2nu :: N -> NU
+n2nu Z = []
+n2nu (S n) = () : (n2nu n)
+
+-- b
+-- b1
+evalNU . succNU = (+1) . evalNU
+
+-- b2
+para todo n1. para todo n2.
+    ¿evalNU (addNU n1 n2) = evalNU n1 + evalNU n2'
+
+-- b3
+
+-- b4
+
+-- 3
+-- a
+
+-- b
+-- b1
+evalNB . normalizarNB = evalNB
+
+-- b2
+evalNB . succNB = (+1) . evalNB
+
+-- b3
+para todo n1. para todo n2.
+    ¿evalNB (addNB n1 n2) = evalNB n1 + evalNB n2?
+
+-- b4
+nb2n . n2nb = id
+
+-- b5
+normalizarNB . normalizarNB = normalizarNB
+
+-- c
+-- c1
+n2nb . nb2n . = id
+
+-- c2
+n2nb . nb2n . = normalizarNB
+
 -- S3
 -- 1
+-- a
+evalExpA :: ExpA -> Int
+
+simplificarExpA :: ExpA -> ExpA
+
+cantidadDeSumaCero :: ExpA -> Int
+
+-- b
+-- b1
+evalExpA . simplificarExpA = evalExpA
+
+-- b2
+cantidadSumaCero . simplificarExpA = const 0
+
 -- 2
+-- a
+evalES :: ExpS -> Int
+
+es2ExpA :: ExpS -> ExpA
+
+expA2es :: ExpA -> ExpS
+
+-- b
+-- b1
+evalExpA . es2ExpA = evalES
+
+-- b2
+evalES . expA2es = evalExpA
+
+-- b3
+es2ExpA . expA2es = id
+
+-- b4
+expA2es . es2ExpA = id
