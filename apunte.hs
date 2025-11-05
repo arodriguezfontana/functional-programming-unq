@@ -111,6 +111,31 @@ unzip [] = ([], [])
 unzip ((x,y):xys) = let (xs, ys) = (unzip xys) 
                         in (x:xs, y:ys)
 
+max :: Ord a => a -> a -> a
+max x y = if x >= y then x else y
+
 null :: [a] -> Bool
 null [] = True
 null (_:_) = False
+
+evalEA :: EA -> Int
+evalEA (Const n) = n
+evalEA (BOp binop e1 e2) = case binop of
+    Sum -> (evalEA e1) + (evalEA e2)
+    Mul -> (evalEA e1) * (evalEA e2)
+
+ea2ExpA :: EA -> ExpA
+ea2ExpA (Const n) = Cte n
+ea2ExpA (BOp binop e1 e2) = case binop of
+     Sum -> Suma (ea2ExpA e1) (ea2ExpA e2)
+     Mul -> Prod (ea2ExpA e1) (ea2ExpA e2)
+
+expA2ea :: ExpA -> EA
+expA2ea (Cte n) = Const n
+expA2ea (Suma e1 e2) = BOp Sum (expA2ea e1) (expA2ea e2)
+expA2ea (Prod e1 e2) = BOp Mul (expA2ea e1) (expA2ea e2)
+
+evalExpA :: ExpA -> Int
+evalExpA (Cte n) = n
+evalExpA (Suma e1 e2) = evalExpA e1 + evalExpA e2
+evalExpA (Prod e1 e2) = evalExpA e1 * evalExpA e2

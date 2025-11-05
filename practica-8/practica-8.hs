@@ -683,28 +683,24 @@ ci demostrado.
 -- j
 para todo xs. para todo ys. 
     ¿unzip (zip xs ys) = (xs, ys)?
+la propiedad es falsa.
 
-sea ws, zs dos listas cualquiera, finitas y totalmente definidas,
-quiero ver que:
-    ¿unzip (zip ws zs) = (ws, zs)?
+Contraejemplo:
+    ws=[]
+    zs=[1]
+    ¿unzip (zip [] [1]) = ([], [1])?
 
-por analisis de casos sobre la estructura ws,
-es eq. a demostrar:
-    CB, ws=[]:
-    SC, xs=(x:xs')
-    ¿unzip (zip ws zs) = (ws, zs)?
-
-CB.i:
-unzip (zip [] zs)
--- zip
+I:
+unzip (zip [] [1])
+-- zip.1
 unzip []
--- unzip
+-- unzip.1
 ([], [])
 
-CB.d:
-([], zs)
+D:
+([], [1])
 
-cb demostrado.
+no se puede demuestrar, por ende la propiedad universal es falsa.
 
 -- S2
 -- 1
@@ -1027,6 +1023,9 @@ n2nb . nb2n . = normalizarNB
 -- 1
 -- a
 evalExpA :: ExpA -> Int
+evalExpA (Cte n) = n
+evalExpA (Suma e1 e2) = evalExpA e1 + evalExpA e2
+evalExpA (Prod e1 e2) = evalExpA e1 * evalExpA e2
 
 simplificarExpA :: ExpA -> ExpA
 
