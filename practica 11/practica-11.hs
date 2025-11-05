@@ -1,8 +1,45 @@
 -- 1
+cantidadCapasQueCumplen :: (Ingrediente -> Bool) -> Pizza -> Int
+cantidadCapasQueCumplen _ Prepizza = 0
+cantidadCapasQueCumplen f (Capa i p) = if f i
+    then 1 + cantidadCapasQueCumplen f p
+    else cantidadCapasQueCumplen f p
+
+conCapasTransformadas :: (Ingrediente -> Ingrediente) -> Pizza -> Pizza
+conCapasTransformadas _ Prepizza = Prepizza
+conCapasTransformadas f (Capa i p) = Capa (f i) (conCapasTransformadas f p)
+
+soloLasCapasQue :: (Ingrediente -> Bool) -> Pizza -> Pizza
+soloLasCapasQue _ Prepizza = Prepizza
+soloLasCapasQue f (Capa i p) = if f i
+    then Capa i (soloLasCapasQue f p)
+    else soloLasCapasQue f p
 
 -- 2
+esQueso :: Ingrediente -> Bool
+esQueso Queso = True
+esQueso _ = False
+
+sinLactosa :: Pizza -> Pizza
+sinLactosa p = soloLasCapasQue (not . esQueso) pizza
+
+aptaIntolerantesLactosa :: Pizza -> Bool
+aptaIntolerantesLactosa p = (==) 0 (cantidadCapasQueCumplen esQueso p)
+
+cantidadDeQueso :: Pizza -> Int
+cantidadDeQueso p = cantidadCapasQueCumplen esQueso p
+
+duplicarSiAceituna :: Ingrediente -> Ingrediente
+duplicarSiAceituna (Aceituna n) = Aceituna (n*2)
+duplicarSiAceituna i = i
+
+conElDobleDeAceitunas :: Pizza -> Pizza
+conElDobleDeAceitunas p = conCapasTransformadas duplicarSiAceituna p
 
 -- 3
+pizzaProcesada :: (Ingrediente -> b -> b) -> b -> Pizza -> b
+pizzaProcesada f z Prepizza = z
+pizzaProcesada f z (Capa i p) = f i (pizzaProcesada f z p)
 
 -- 4
 
