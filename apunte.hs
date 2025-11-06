@@ -55,6 +55,18 @@ maximun = recr (error "") (\x xs maximo -> if null xs
                                                 then x
                                                 else max x maximun)
 
+id :: a -> a
+map :: (a -> b) -> [a] -> [b]
+twice :: (a -> a) -> a -> a
+const :: a -> b -> a
+zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
+foldr :: (a -> b -> b) -> b -> [a] -> b
+a -> b
+
+filter :: (a -> Bool) -> [a] -> [a]
+flip :: (a -> b -> c) -> b -> a -> c
+Int -> Int -> Int
+
 length :: [a] -> Int
 length [] = 0
 length (x:xs) = 1 + length xs

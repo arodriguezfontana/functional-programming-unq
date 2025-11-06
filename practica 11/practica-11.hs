@@ -1,9 +1,7 @@
 -- 1
 cantidadCapasQueCumplen :: (Ingrediente -> Bool) -> Pizza -> Int
 cantidadCapasQueCumplen _ Prepizza = 0
-cantidadCapasQueCumplen f (Capa i p) = if f i
-    then 1 + cantidadCapasQueCumplen f p
-    else cantidadCapasQueCumplen f p
+cantidadCapasQueCumplen f (Capa i p) = unoSi (f i) + cantidadCapasQueCumplen f p
 
 conCapasTransformadas :: (Ingrediente -> Ingrediente) -> Pizza -> Pizza
 conCapasTransformadas _ Prepizza = Prepizza
@@ -21,25 +19,51 @@ esQueso Queso = True
 esQueso _ = False
 
 sinLactosa :: Pizza -> Pizza
-sinLactosa p = soloLasCapasQue (not . esQueso) pizza
+sinLactosa = soloLasCapasQue (not . esQueso)
 
 aptaIntolerantesLactosa :: Pizza -> Bool
-aptaIntolerantesLactosa p = (==) 0 (cantidadCapasQueCumplen esQueso p)
+aptaIntolerantesLactosa = (==0) . cantidadCapasQueCumplen esQueso
 
 cantidadDeQueso :: Pizza -> Int
-cantidadDeQueso p = cantidadCapasQueCumplen esQueso p
+cantidadDeQueso = cantidadCapasQueCumplen esQueso
 
 duplicarSiAceituna :: Ingrediente -> Ingrediente
 duplicarSiAceituna (Aceituna n) = Aceituna (n*2)
 duplicarSiAceituna i = i
 
 conElDobleDeAceitunas :: Pizza -> Pizza
-conElDobleDeAceitunas p = conCapasTransformadas duplicarSiAceituna p
+conElDobleDeAceitunas = conCapasTransformadas duplicarSiAceituna
 
 -- 3
-
+pizzaProcesada :: (Ingrediente -> b -> b) -> b -> Pizza -> b
+pizzaProcesada f z Prepizza   = z
+pizzaProcesada f z (Capa i p) = f i (pizzaProcesada f z p)
 
 -- 4
+unoSi :: Bool -> Int
+unoSi True  = 1
+unoSi False = 0
+
+cantidadCapasQueCumplen :: (Ingrediente -> Bool) -> Pizza -> Int
+cantidadCapasQueCumplen f = pizzaProcesada ((+) . unoSi . f) 0
+
+conCapasTransformadas :: (Ingrediente -> Ingrediente) -> Pizza -> Pizza
+conCapasTransformadas f = pizzaProcesada (Capa . f) Prepizza
+
+soloLasCapasQue :: (Ingrediente -> Bool) -> Pizza -> Pizza
+soloLasCapasQue f = pizzaProcesada (\i pz -> if f i then Capa i pz else pz) Prepizza
+
+sinLactosa :: Pizza -> Pizza
+sinLactosa = soloLasCapasQue (not . esQueso)
+
+aptaIntolerantesLactosa :: Pizza -> Bool
+aptaIntolerantesLactosa = (==0) . cantidadCapasQueCumplen esQueso
+
+cantidadDeQueso :: Pizza -> Int
+cantidadDeQueso = cantidadCapasQueCumplen esQueso
+
+conElDobleDeAceitunas :: Pizza -> Pizza
+conElDobleDeAceitunas = conCapasTransformadas duplicarSiAceituna
 
 -- 5
 
@@ -70,26 +94,25 @@ foldr1 f [x] = x
 foldr1 f (x:xs) = f x (foldr1 f xs)
 
 zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
-zipWith f [] _ = []
-zipWith f _ [] = []
 zipWith f (x:xs) (y:ys) = f x y : zipWith f xs ys
+zipWith _ _ _ = []
 
---
 scanr :: (a -> b -> b) -> b -> [a] -> [b]
-scanr f z [] = [z]
-scanr f z (x:xs) = f x (head (scanr f z xs)) : (scanr f z xs)
+scanr _ z []     = [z]
+scanr f z (x:xs) = let (r:rs) = scanr f z xs
+  in f x r : r : rs
 
 -- 8
 
 -- 9
 sum :: [Int] -> Int
-sum = foldr (\n m -> n + m) 0
+sum = foldr (+) 0
 
 length :: a -> Int
-length = foldr (\_ n -> 1 + n) 0
+length = foldr (const (+1)) 0
 
 map :: (a -> b) -> [a] -> [b]
-map g = foldr (\x ys -> g x : ys) []
+map g = foldr ((:) . g) []
 
 filter :: (a -> Bool) -> [a] -> [a]
 filter p = foldr (\x ys -> if p x then x : ys else ys) []
@@ -98,27 +121,47 @@ find :: (a -> Bool) -> [a] -> Maybe a
 find p = foldr (\x my -> if p x then Just x else my) Nothing
 
 any :: (a -> Bool) -> [a] -> Bool
-find p = foldr (\x b -> p x || b) False
+find p = foldr ((||) . p) False
 
 all :: (a -> Bool) -> [a] -> Bool
-all p = foldr (\x b -> p x && b) True
+all p = foldr ((&&) . p) True
 
 countBy :: (a -> Bool) -> [a] -> Int
-countBy p = foldr (\x n -> if p x then 1 + n else n) 0
+countBy p = foldr ((+) . unoSi . p) 0
 
 partition :: (a -> Bool) -> [a] -> ([a], [a])
 partition p = foldr (\x (ys,zs) -> if p x then (x:ys,zs) else (ys,x:zs)) ([],[])
 
 zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
-
+zipWith f = foldr (\x h ys -> case ys of
+    [] -> []
+    (y:ys') -> f x y : h ys') (const [])
 
 scanr :: (a -> b -> b) -> b -> [a] -> [b]
+
 takeWhile :: (a -> Bool) -> [a] -> [a]
+
+
 take :: Int -> [a] -> [a]
+
+
 drop :: Int -> [a] -> [a]
+
+
 elemAt :: Int -> [a] -> a
 
+
 -- 10
+filter id :: [Bool] -> [Bool]
+map (\x y z -> (x, y, z)) :: [a] -> [b -> c -> (a,b,c)]
+map (+) :: [Int] -> [Int -> Int]
+filter fst :: [(Bool,a)] -> [(Bool,a)]
+-- filter (flip const (+)) :: 
+map const :: [a] -> [b -> a]
+map twice :: [a -> a] -> [a -> a]
+foldr twice :: a -> [a -> a] -> a
+-- zipWith fst :: 
+-- foldr (\x r z -> (x, z) : r z) (const []) ::
 
 -- a1
 -- a
