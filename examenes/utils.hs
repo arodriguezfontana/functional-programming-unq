@@ -1,7 +1,7 @@
 -- recr
-recr :: (a -> [a] -> b -> b) -> b -> [a] -> b
-recr f z [] = z
-recr f z (x:xs) = f x xs (recr z f xs)
+recr :: b -> (a -> [a] -> b -> b) -> [a] -> b
+recr z f [] = z
+recr z f (x:xs) = f x xs (recr z f xs)
 
 -- foldr
 foldr :: (a -> b -> b) -> b -> [a] -> b

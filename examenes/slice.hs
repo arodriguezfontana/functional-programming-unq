@@ -3,7 +3,6 @@ data SliceExp a = Base [a]
                     | Drop Int (SliceExp a) deriving (Show)
 
 -- 1. Recursion explicita.
-
 -- a. Devuelve la lista final, luego de evaluar todas las operaciones.
 materialize :: SliceExp a -> [a]
 materialize (Base xs) = xs
