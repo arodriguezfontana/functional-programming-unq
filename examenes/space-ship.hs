@@ -7,8 +7,8 @@ type Hazard = (Direction, Int, Size)
 
 -- 1. Recursion explicita.
 
+-- a. Inidica si la nave posee al menos un generador de campos de fuerza.
 shielded :: Spaceship -> Bool 
--- Inidica si la nave posee al menos un generador de campos de fuerza.
 shielded Plug = Flase
 shielded (Module c s1 s2) = iguales c Shield || shielded s1 || shielded s2
 
@@ -18,19 +18,19 @@ iguales Engine Engine = True
 iguales Shield Shield = True
 iguales Cannon Cannon = True
 
+-- b. Indica si la nave posee al menos un cañon. 
 armed :: Spaceship -> Bool
--- Indica si la nave posee al menos un cañon. 
 armed Plug = Flase
 armed (Module c s1 s2) = iguales c Cannon || armed s1 || armed s2
 
+-- c. Retorna el poder de propulsion de la nave.
 thrust :: Spaceship -> Int
--- Retorna el poder de propulsion de la nave.
 thrust Plug = 0
 thrust (Module c Plug Plug) = unoSi (iguales c Engine)
 thrust (Module c s1 s2) = thrust s1 + thrust s2
 
+-- d. Deveulve la nave resultante de despender los modulos dependientes del modulo donde se recibe el impacto (se asume que se produce el impacto). 
 wreck :: Hazard -> Spaceship -> Spaceship
--- Deveulve la nave resultante de despender los modulos dependientes del modulo donde se recibe el impacto (se asume que se produce el impacto). 
 wreck _ Plug = Plug
 wreck (d,1,s) _ = Plug
 wreck (d,n,s) (Module c s1 s2) = case d of
@@ -42,20 +42,30 @@ foldSS :: (Component -> b -> b -> b) -> b -> Spaceship -> b
 foldSS _ p Plug = p
 foldSS m p (Module c s1 s2) = m c (foldSS p m s1) (foldSS p m s2)
 
+recSS :: (Component -> Spaceship -> Spaceship -> b -> b -> b) -> b -> Spaceship -> b
+recSS _ p Plug = p
+recSS m p (Module c s1 s2) = m c s1 s2 (recSS p m s1) (recSS p m s2)
+
 -- 3. Sin recursion explicita.
 
 -- a. Retorna la capacidad de la nave, donde cada modulo de carga aporta una unidad de capacidad.
 capacity :: Spaceship -> Int
-capacity = foldSS 0 (\c n m -> unoSi (iguales c Cargo) + n + m)
+capacity = foldSS (\c n m -> unoSi (iguales c Cargo) + n + m) 0
 
 -- b. Dada una lista de naves, retorna la de capacidad maxima. 
 largest :: [Spaceship] -> Spaceship 
-largest = recr (\s ss sr -> if null ss then s else
-                           if capacity s >= capacity sr then s else sr) (error "No hay Spaceships")
+largest = foldSS (\s s' -> if capacity s >= capacity s'
+    then s else s') Plug
 
 -- c. Dada una nave, retorna su alto y ancho (pensando el alto como la cantidad de componentes de la rama mas larga y el ancho como como la cantidad de componentes del nivel mas ancho).
 dimensions :: Spaceship -> (Int, Int)
-dimensions
+dimensions s = (altoSS s, anchoSS s)
+
+altoSS :: Spaceship -> Int
+altoSS = foldSS (\_ n m -> 1 + max n m) 0
+
+anchoSS :: Spaceship -> Int
+anchoSS = 
 
 -- d. Simula el resultado de maniobrar una nave a traves de una serie de peligros.
 -- Si se encuentra un objeto pequeño y la nave esta escudada, no se produce impacto. 
@@ -77,8 +87,8 @@ replace f Plug = Plug
 replace f (Module c s1 s2) = Module (f c) (replace f s1) (replace f s2)
 
 sea
-sp'::Spaceship
 f'::Component -> Component
+sp'::Spaceship
 quiero ver que:
     ¿componentes (replace f' sp') = map f' (componentes sp')?
 
