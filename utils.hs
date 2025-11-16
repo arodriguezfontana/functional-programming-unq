@@ -1,223 +1,87 @@
-id :: a -> a
-id x = x
+-- slice 25
+-- animacion 25
+-- spaceship 
+-- multiset
+-- nim
+-- midi
 
-apply :: (a -> b) -> a -> b
-apply f x = f x
+-- funnel
+-- json
+-- multisetlight
+-- parcialito
+-- three
+-- svson
+-- practica sincronica
+-- mapa
+-- tcommand
 
-const :: a -> b -> a
-const x y = x
-
-twice :: (a -> a) -> a -> a
-twice f x = f (f x)
-
-unflip :: (b -> a -> c) -> a -> b -> c
-unflip f x y = f y x
-
-flip :: (a -> b -> c) -> b -> a -> c
-flip f x y = f y x
-
-subst :: (a -> b -> c) -> (a -> b) -> a -> c
-subst f g x = (f x) (g x)
-
-compose :: (a -> b) -> (c -> a) -> c -> b
-compose f g x = f (g x)
-
-curry :: ((a,b) -> c) -> a -> b -> c
-curry f x y = f (x,y)
-
-uncurry :: (a -> b -> c) -> (a,b) -> c
-uncurry f (x,y) = f x y
-
-por ppio. de ext.:
-para todo , :
-    ¿?
-
-sea cualquiera, finit y totalmente definid,
-quiero ver que:
-    ¿?
-
-por ppio. de ind. sobre la estructura ,
-es eq. a demostrar:
-    CB, =:
-        ¿?
-    CI, =:
-        HI: ¡!
-        TI: ¿?
-
-CB.i:
-CB.d:
-cb demostrado.
-
-CI.i:
-CI.d:
-ci demostrado.
-
-any :: (a -> Bool) -> [a] -> Bool
-any p xs = foldr (\x r -> p x || r) False xs
-
-foldr :: (a -> b -> b) -> b -> [a] -> b
-foldr f z []     = z
-foldr f z (x:xs) = f x (foldr f z xs)
-
--- Bloqueo (Necesito un lema):
--- Me atasco en la demostración porque ninguna definición simple aplica,
--- y el único camino adelante requiere una nueva inducción anidada.
-
--- Objetivo (Cuál lema):
--- Miro lo que tengo
--- y a dónde quiero llegar
--- y generalizo esa transformación para crear la propiedad del lema.
-
--- f 
-take ::: Int -> [a] -> [a]
-
-f :: [a] -> b
-f [] = ...
-f (x:xs) = ... x ... f xs ...
-
-f = foldr (\x r -> ... x ... r) (... xs)
--- Parametrisacion de los puntitos
--- 1ra funcion de 2 argumentos
--- El while no termina, no lo puedo escribir con fold
-
--- foldr toma una función combinadora, un valor base y la lista.
--- Función combinadora (f): Debe tomar el elemento actual (n) y el resultado recursivo (r), y combinarlos.
--- Valor base (z): Es el valor para la lista vacía.44
-
--- x simepre el primer elemento
--- r el resultado de la recursion n la cola
--- cuando escribo una duncion por recurcion ponfo la duncion SIN PARAMETROS
-
--- IZQUIERDA, NO ES CON LO QUE HAGO RECURCION Y NO CAMBIA
--- r tiene un nombre adecuado al tipo del resultado
--- si cambia lo paso para der
-
--- si tiene dos parametros es una funcion que toma un parametro y devuelve ua fnucion que toma otro
+-- tortuga NO
+-- prefix NO
 
 
-foldr :: (a -> b -> b) -> b -> [a] -> b
-foldr f z [] = z
-foldr f z (x:xs) = f x (foldr f z xs)
 
-g :: [a] -> b
-g [] = ...
-g (x:xs) = ... x ... g xs
+caminoMasCortoHasta e = foldTree cb cr e
+    where cb z _ EmptyT = Nothing
+        cr e z f n r1 r2 = if n==e
+            then Just []
+            else elMasCorto (appendToMaybe Izq (caminoMasCortoHasta x t1))
+                 elMasCorto (appendToMaybe Der (caminoMasCortoHasta x t2))
 
-g = foldr (\x r -> ... x ... r) (...)
+appendToMaybe :: Dir -> Maybe [Dir] -> Maybe [Dir]
+appendToMaybe x Nothing = Nothing
+appendToMaybe x (Just ys) = Just x:ys
 
-recr :: b -> (a -> [a] -> b -> b) -> [a] -> b
-recr z f [] = z
-recr z f (x:xs) = f x xs (recr z f xs)
+elMasCorto :: Maybe [Dir] -> Maybe [Dir] -> Maybe [Dir]
+elMasCorto Nothing m = m
+elMasCorto m Nothing = m
+elMasCorto (Just xs) (Just ys) = length xs > length ys then Just ys else Just xs
 
-g :: [a] -> b
-g [] = ...
-g (x:xs) = x ... xs ... g xs ...
+estaEnElCamino :: [Dir] -> Tree a -> Bool
+estaEnElCamino xs EmptyT = null xs
+estaEnElCamino xs (NodeT n t1 t2) = case xs of
+    [] -> True
+    (Izq:ys) -> estaEnElCamino ys t1 
+    (Der:ys) -> estaEnElCamino ys t2
 
--- parte inductiva sin haber hecho recursion
+estaEnElCamino' :: [Dir] -> Tree a -> Bool
+estaEnElCamino' = flip (foldT
+    (\xs -> null xs) -- null
+    (\n r1 r2 xs -> case xs of
+            [] -> True
+            (Izq:ys) -> r1 ys
+            (Der:ys) -> r2 ys))
 
-maximun :: [a] -> a
-maximun [] = error ""
-maximun (x:xs)= if null xs
-    then xs
-    else max x (maximun xs)
+todosLosCaminosDeDirs :: Tree a -> [[Dir]]
+todosLosCaminosDeDirs EmptyT = [[]]
+todosLosCaminosDeDirs (NodeT n t1 t2) = map (Izq :) (todosLosCaminosDeDirs t1) ++ map (Der :) (todosLosCaminosDeDirs t1)
 
-maximun = recr (error "") (\x xs maximo -> if null xs
-                                                then x
-                                                else max x maximun)
+-- 1
+data Dir = Izq | Der
+caminoMasCortoHasta :: Eq a => a -> Tree a -> Maybe [Dir]
+estaEnElCamino :: [Dir] -> Tree a -> Bool
+todosLosCaminosDeDirs :: Tree a -> [[Dir]]
+todosLosCaminosDeDirsHasta :: Eq a => a -> Tree a -> [[Dir]]
 
-id :: a -> a
-map :: (a -> b) -> [a] -> [b]
-twice :: (a -> a) -> a -> a
-const :: a -> b -> a
-zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
-foldr :: (a -> b -> b) -> b -> [a] -> b
-a -> b
+-- 2
+countT :: Eq a => (a -> Bool) -> Tree a -> Int
 
-filter :: (a -> Bool) -> [a] -> [a]
-flip :: (a -> b -> c) -> b -> a -> c
-Int -> Int -> Int
+para todo e 
+   countT (e ==) = length (todosLosCaminosDeDirsHasta e)
 
-length :: [a] -> Int
-length [] = 0
-length (x:xs) = 1 + length xs
+-- 3
+-- Completar
+-- 1) las de listas todas
+-- 2) las de árboles binarios
+-- 3) unzip :: [(a,b)] -> ([a],[b])
+-- 4) partitionT :: (a -> Bool) -> Tree a -> ([a], [a])
+-- 5) Representaciones numéricas, por lo menos N y NBin
 
-sum :: [Int] -> Int
-sum [] = 0
-sum (n:ns) = n + sum ns
+-- 4
+para todo f, t1 y t2.
+    heighT (zipWithT f t1 t2) = min (heighT t1) (heighT t2)
 
-product :: [Int] -> Int
-product [] = 0
-product (n:ns) = n * product ns
+Para todo b1, b2.
+	not (b1 && b2) = not b1 || not b2
 
-concat :: [[a]] -> [a]
-concat [] = []
-concat (xs:xss) = xs ++ concat xss
-
-elem :: Eq a => a -> [a] -> Bool
-elem _ [] = False
-elem e (x:xs) = e == x || elem e xs
-
-all :: (a -> Bool) -> [a] -> Bool
-all f [] = True
-all f (x:xs) = f x && all f xs
-
-any :: (a -> Bool) -> [a] -> Bool
-any f [] = False
-any f (x:xs) = f x || any f xs
-
-count :: (a -> Bool) -> [a] -> Int
-count f [] = 0
-count f (x:xs) = if f x
-    then 1 + count f xs
-    else count f xs
-
-subset :: Eq a => [a] -> [a] -> Bool
-subset [] ys = True
-subset (x:xs) ys = elem x ys && subset xs ys
-
-(++) :: [a] -> [a] -> [a]
-(++) [] ys = ys
-(++) (x:xs) ys = x : (++) xs ys
-
-reverse :: [a] -> [a]
-reverse [] = []
-reverse (x:xs) = reverse xs ++ [x]
-
-zip :: [a] -> [b] -> [(a,b)]
-zip [] _ = []
-zip _ [] = []
-zip (x:xs) (y:ys) = (x,y) : zip xs ys
-
-unzip :: [(a,b)] -> ([a],[b])
-unzip [] = ([], [])
-unzip ((x,y):xys) = let (xs, ys) = (unzip xys) 
-                        in (x:xs, y:ys)
-
-max :: Ord a => a -> a -> a
-max x y = if x >= y then x else y
-
-null :: [a] -> Bool
-null [] = True
-null (_:_) = False
-
-evalEA :: EA -> Int
-evalEA (Const n) = n
-evalEA (BOp binop e1 e2) = case binop of
-    Sum -> (evalEA e1) + (evalEA e2)
-    Mul -> (evalEA e1) * (evalEA e2)
-
-ea2ExpA :: EA -> ExpA
-ea2ExpA (Const n) = Cte n
-ea2ExpA (BOp binop e1 e2) = case binop of
-     Sum -> Suma (ea2ExpA e1) (ea2ExpA e2)
-     Mul -> Prod (ea2ExpA e1) (ea2ExpA e2)
-
-expA2ea :: ExpA -> EA
-expA2ea (Cte n) = Const n
-expA2ea (Suma e1 e2) = BOp Sum (expA2ea e1) (expA2ea e2)
-expA2ea (Prod e1 e2) = BOp Mul (expA2ea e1) (expA2ea e2)
-
-evalExpA :: ExpA -> Int
-evalExpA (Cte n) = n
-evalExpA (Suma e1 e2) = evalExpA e1 + evalExpA e2
-evalExpA (Prod e1 e2) = evalExpA e1 * evalExpA e2
+todosLosCaminos :: Tree a -> [[a]]
+render :: Image -> Int -> Image

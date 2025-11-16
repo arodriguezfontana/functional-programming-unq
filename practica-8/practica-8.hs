@@ -40,7 +40,7 @@ subset (x:xs) ys = elem x ys && subset xs ys
 
 (++) :: [a] -> [a] -> [a]
 (++) [] ys = ys
-(++) (x:xs) ys = x : (++) xs ys
+(++) (x:xs) ys = x : xs ++ ys
 
 reverse :: [a] -> [a]
 reverse [] = []
