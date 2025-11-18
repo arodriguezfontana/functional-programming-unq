@@ -96,17 +96,17 @@ por principio de induccion estructural sobre la estructura de ms, es equivalente
         hi4: ¡evalMSE (simpMSE ms') = evalMSE ms'!
         ti4: ¿evalMSE (simpMSE (MapMS f m)) = evalMSE (MapMS f m)?
 
-cb-izq:
+cbi:
 evalMSE (simpMSE EmptMS)
 -- simpMSE.1
 evalMSE EmptMS
 
-cb-der:
+cbd:
 evalMSE EmptMS
 
 cb demostrado.
 
-ci1-der:
+ci1i:
 evalMSE (simpMSE (AddMS x ms'))
 -- simpMSE.2
 evalMSE (AddMS x (simpMSE ms'))
@@ -117,12 +117,12 @@ x : evalMSE ms'
 -- evalMSE.2
 evalMSE (AddMS x ms')
 
-ci1-der:
+ci1d:
 evalMSE (AddMS x ms')
 
 ci1 demostrado.
 
-ci2-izq:
+ci2i:
 evalMSE (simpMSE (RemoveMS x ms'))
 -- simpMSE.3
 evalMSE (simpRemove x (simpMSE ms'))
@@ -133,12 +133,12 @@ remove x (evalMSE ms')
 -- evalMSE.3
 evalMSE (RemoveMS x ms')
 
-ci2-der:
+ci2d:
 evalMSE (RemoveMS x ms')
 
 ci2 demostrado.
 
-ci3-izq:
+ci3i:
 evalMSE (simpMSE (UnionMS m1 m2))
 -- simpMSE.4
 evalMSE (simpUnion (simpMSE m1) (simpMSE m2))
@@ -149,12 +149,12 @@ evalMSE m1 ++ evalMSE m2
 -- evalMSE.4
 evalMSE (UnionMS m1 m2)
 
-ci3-der:
+ci3d:
 evalMSE (UnionMS m1 m2)
 
 ci3 demostrado.
 
-ci4-izq:
+ci4i:
 evalMSE (simpMSE (MapMS f ms'))
 -- simpMSE.5
 evalMSE (simpMap f (simpMSE ms'))
@@ -165,7 +165,7 @@ map f (evalMSE ms)
 -- evalMSE.5
 evalMSE (MapMS f ms)
 
-ci4-der:
+ci4d:
 evalMSE (MapMS f ms')
 
 ci4 demostrado.
@@ -182,12 +182,12 @@ por analisis de casos sobre ms':
     c2, ms'/=(AddMS x ms)
         ¿evalMSE (simpRemove y ms') = remove y (evalMSE ms')?
 
-c1-izq:
+c1i:
 evalMSE (simpRemove y (AddMS x ms))
 -- simpRemove.1
 evalMSE (if y == x then ms else RemoveMS x (AddMS y ms))
 
-c1-der:
+c1d:
 remove y (evalMSE (AddMS x ms))
 -- evalMSE.2
 remove y (x : evalMSE ms)
@@ -198,15 +198,15 @@ por particion en subcasos sobre el if:
     sc1, y=x
     sc2, y/=x
 
-sc1-c1-izq:
+sc1-c1i:
 evalMSE ms
 
-sc1-c1-der:
+sc1-c1d:
 evalMSE ms
 
 sc1 demostrado.
 
-sc2-c1-izq:
+sc2-c1i:
 evalMSE (RemoveMS y (AddMS x ms)))
 -- evalMSE.3
 remove y (evalMSE (Add x ms))
@@ -215,20 +215,20 @@ remove y (x : evalMSE ms)
 -- remove.2
 if y == x then evalMSE ms else x : remove y (evalMSE ms) 
 
-sc2-c1-der:
+sc2-c1d:
 if y == x then evalMSE ms else x : remove y (evalMSE ms)
 
 sc2 demostrado.
 c1 demostrado.
 
-c2-izq:
+c2i:
 evalMSE (simpRemove y ms')
 -- simpRemove.1
 evalMSE (RemoveMS y ms')
 -- evalMSE.3
 remove y (evalMSE ms')
 
-c2-der:
+c2d:
 remove y (evalMSE ms')
 
 c2 demostrado.
@@ -248,12 +248,12 @@ por analisis de casos sobre m1' y m2':
     c3, m1'/=EmptMS, m2'/=EmptMS
         ¿evalMSE (simpUnion m1' m2') = evalMSE m1' ++ evalMSE m2'?
 
-c1-izq:
+c1i:
 evalMSE (simpUnion EmptMS m2')
 -- simpUnion.1
 evalMSE m2'
 
-c1-der:
+c1d:
 evalMSE EmptMS ++ evalMSE m2'
 -- evalMSE.1
 [] ++ evalMSE m2'
@@ -262,12 +262,12 @@ evalMSE m2'
 
 c1 demostrado.
 
-c2-izq:
+c2i:
 evalMSE (simpUnion m1' EmptMS)
 -- simpUnion.2
 evalMSE m1'
 
-c2-der:
+c2d:
 evalMSE m1' ++ evalMSE EmptMS
 -- evalMSE.1
 evalMSE m1' ++ []
@@ -276,14 +276,14 @@ evalMSE m1'
 
 c2 demostrado.
 
-c3-izq:
+c3i:
 evalMSE (simpUnion m1' m2')
 -- simpUnion.3
 evalMSE (UnionMS m1' m2')
 -- evalMSE.4
 evalMSE m1' ++ evalMSE m2'
 
-c3-der:
+c3d:
 evalMSE m1' ++ evalMSE m2'
 
 c3 demostrado.
@@ -301,14 +301,14 @@ por analisis de casos sobre m':
     c2, m'/=EmptyMS:
         ¿evalMSE (simpMap f' m') = map f' (evalMSE m')?
 
-c1-izq:
+c1i:
 evalMSE (simpMap f' EmptyMS)
 -- simpMap.1
 evalMSE EmptMS
 -- evalMSE.1
 []
 
-c1-der:
+c1d:
 map f' (evalMSE EmptyMS)
 -- evalMSE.1
 map f' []
@@ -317,14 +317,14 @@ map f' []
 
 c1 demostrado.
 
-c2-izq:
+c2i:
 evalMSE (simpMap f' m')
 -- simpMap.2
 evalMSE (MapMS f' m')
 -- evalMSE.5
 map f' (evalMSE m')
 
-c2-der:
+c2d:
 map f' (evalMSE m')
 
 c2 demostrado.
