@@ -1,19 +1,22 @@
 -- slice 25
 -- animacion 25
+-- midi 24
+-- funnel 24
 -- spaceship 
 -- multiset
 -- nim
--- midi
 
--- funnel
 -- json
 -- multisetlight
+-- multiset leng
 -- parcialito
 -- three
 -- svson
 -- practica sincronica
 -- mapa
 -- tcommand
+-- recu
+-- parcialito
 
 -- tortuga NO
 -- prefix NO

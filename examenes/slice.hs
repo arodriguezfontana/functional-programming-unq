@@ -1,7 +1,3 @@
-data SliceExp a = Base [a] 
-                    | Take Int (SliceExp a)
-                    | Drop Int (SliceExp a) deriving (Show)
-
 -- 1. Recursion explicita.
 -- a. Devuelve la lista final, luego de evaluar todas las operaciones.
 materialize :: SliceExp a -> [a]
@@ -20,14 +16,18 @@ normalize :: SliceExp a -> SliceExp a
 normalize (Base xs) = Base xs
 normalize (Take n s) = if n <= 0
     then normalize s
-    else case (normalize s) of 
-            Take n' s' -> Take (n+n') s'
-            s'' -> Take n s''
+    else normTake n (normalize s)
 normalize (Drop n s) = if n <= 0
     then normalize s
-    else case (normalize s) of 
-            Drop n' s' -> Drop (n+n') s'
-            s'' -> Drop n s''
+    else normDrop n (normalize s)
+
+normTake :: Int -> SliceExp a -> SliceExp a 
+normTake n (Take m s) = Take (n+m) s
+normTake n s = Take n s
+
+normDrop :: Int -> SliceExp a -> SliceExp a
+normDrop n (Drop m s) = Drop (n+m) s
+normDrop n s = Drop n s
 
 takeS :: Int -> SliceExp a -> SliceExp a
 -- Aplica take a una expresión SliceExp ya normalizada, sin evaluarla completamente. La expresion que devuelve no inicia con el contrsuctor Take. 
@@ -96,35 +96,28 @@ recSE bf tf df (Base xs) = bf xs
 recSE bf tf df (Take n s) = tf n s (recSE bf tf df s)
 recSE bf tf df (Drop n s) = df n s (recSE bf tf df s)
 
--- 4. Ejecicio 1 sin recursion explicita. 
--- a
+-- 4. Utilizando esquemas.
 materialize' :: SliceExp a -> [a]
 materialize' = foldSE 
     (\xs -> xs)
     (\n xs -> take n xs)
     (\n xs -> drop n xs)
 
--- b
 lenS' :: SliceExp a -> Int
 lenS' = foldSE
     (\xs -> length xs)
     (\n m -> min n m)
     (\n m -> max 0 (m-n))
 
--- c
 normalize' :: SliceExp a -> SliceExp a
 normalize' = foldSE
     (\xs -> Base xs)
     (\n s -> if n <= 0
         then s
-        else case s of 
-            Take n' s' -> Take (n+n') s'
-            _ -> Take n s)
+        else normTake n s)
     (\n s -> if n <= 0
         then s
-        else case s of 
-            Drop n' s' -> Drop (n+n') s'
-            _ -> Drop n s))
+        else normDrop n s))
 
 -- d
 takeS' :: Int -> SliceExp a -> SliceExp a

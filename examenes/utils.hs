@@ -166,12 +166,25 @@ por principio de induccion estructural sobre la estructura de , es equivalente a
         ti: ¿?
 
 cb-izq:
+    lado-izq
+=               (funcion.n)
 cb-der:
 cb demostrado.
 
 ci-izq:
 ci-der:
 ci demostrado.
+
+-- demo lema
+para todo :
+
+sea , quiero ver que:
+
+por analisis de casos sobre:
+
+particion en subcasos sobre el if:
+    sc1, = :
+    sc2, /= :
 
 -- funciones de listas 
 length :: [a] -> Int
@@ -299,7 +312,6 @@ agregoACada _ [] = []
 agregoACada x (ys:yss) = (x : ys) : agregoACada x yss
 
 -- adicionales
-
 losAntecesoresDe :: a -> Tree a -> [a]
 losAntecesoresDe _ EmptyT = []
 losAntecesoresDe e (NodeT e' t1 t2) = if elemT e t1
@@ -357,6 +369,9 @@ countBy f = foldr (\x n -> unoSi (f x) + n) 0
 
 partition :: (a -> Bool) -> [a] -> ([a], [a])
 partition f = foldr (\x (xs,ys) -> if f x then (x:xs, ys) else (xs, x:ys)) ([],[])
+
+remove :: Eq a => a -> [a]
+remove e = recr (\x xs rs -> if e == x then xs else x : rs) []
 
 take' :: Int -> [a] -> [a]
 take _ [] = []

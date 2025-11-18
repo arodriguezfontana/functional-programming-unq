@@ -59,7 +59,6 @@ por principio de induccion en la estructura a, quiero ver que:
         hi1: ¡duracion (alargar k a1) = k* duracion a1!
         hi2: ¡duracion (alargar k a2) = k* duracion a2!
         ti: ¿duracion (alargar k (Sec a1 a2)) = k* duracion (Sec a1 a2)?
-
     ci2, an=(Par a1 a2)
         hi1: ¡duracion (alargar k a1) = k* duracion a1!
         hi2: ¡duracion (alargar k a2) = k* duracion a2!
@@ -149,7 +148,7 @@ recA ef mf sf pf (Mov i ac) = mf i ac
 recA ef mf sf pf (Sec a1 a2) = sf (recA ef mf sf pf a1) (recA ef mf sf pf a2) a1 a2
 recA ef mf sf pf (Par a1 a2) = pf (recA ef mf sf pf a1) (recA ef mf sf pf a2) a1 a2
 
--- 5. Ejercicio 2 utilizando esquemas.
+-- 5. Con esquemas.
 duracion' :: Animacion a -> Int 
 duracion' = foldA
     (\d -> d) -- id
@@ -195,7 +194,7 @@ contarHasta' = recN f z n
         z = []
         f n r = r ++ [n]
 
--- 6. Esquemas.
+-- 6. Con esquemas.
 ciclar :: Animacion a -> Simulador a -- Simulador a = Tiempo -> Frame a
 ciclar a = \t -> atIndex (t ´mod´ length (simular a)) (simular a)
 
