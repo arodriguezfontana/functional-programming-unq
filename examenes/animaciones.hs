@@ -1,4 +1,5 @@
--- 1. Recursión explícita (Realizar un único recorrido sobre cada lista).
+-- 1. Explícita (Un único recorrido sobre cada lista).
+-- a. Dadas dos listas de números sin repetidos, ordenadas en forma creciente, describe una lista ordenada y sin repetidos que contiene los elementos de ambas listas.
 combinarSinDuplicados :: [Int] -> [Int] -> [Int]
 combinarSinDuplicados [] ys = ys
 combinarSinDuplicados xs [] = xs
@@ -8,19 +9,22 @@ combinarSinDuplicados (x:xs) (y:ys) = if x == y
         then x : combinarSinDuplicados xs (y:ys)
         else y : combinarSinDuplicados (x:xs) ys
 
--- 2. Recursión explícita.
+-- 2. Explícita.
+-- a. Describe la duración total de la animación (considerando que las acciones en paralelo terminan cuando termina la más larga).
 duracion :: Animacion a -> Int
 duracion (Espera d) = d
 duracion (Mov d ac) = d
 duracion (Sec a1 a2) = duracion a1 + duracion a2
 duracion (Par a1 a2) = max (duracion a1) (duracion a2)
 
+-- b. Describe una animación donde la duración de cada acción está multiplicada por un factor con respecto a la duración original.
 alargar :: Int -> Animacion a -> Animacion a
 alargar n (Espera d) = Espera (n*d)
 alargar n (Mov d ac) = Mov (n*d) ac
 alargar n (Sec a1 a2) = Sec (alargar n a1) (alargar n a2)
 alargar n (Par a1 a2) = Par (alargar n a1) (alargar n a2)
 
+-- c. Describe una lista con un frame por cada tiempo de la duración de la animación. Cada frame es una lista con las acciones que ocurren simultáneamente en el tiempo indicado
 simular :: Animacion a -> [Frame a]
 simular (Espera d) = replicate d []
 simular (Mov d ac) = replicate d [ac]
@@ -32,6 +36,7 @@ zipLong [] yss = yss
 zipLong xss [] = xss
 zipLong (xs:xss) (ys:yss) = (xs++ys) : zipLong xss yss
 
+-- d. Describe una lista de los tiempos de la animación donde no hay ninguna acción.
 tiemposDeEspera :: Animacion a -> [Tiempo]
 tiemposDeEspera (Espera d) = contarHasta d
 tiemposDeEspera (Mov d ac) = []
@@ -43,13 +48,13 @@ contarHasta 0 = []
 contarHasta n = contarHasta (n-1) ++ [n]
 
 -- 3. Demostrar: para todo k >= 0. duracion . (alargar k) = (k*) . duracion.
-Por principio de extensionalidad, para todo k'>=0, para todo a':
+por principio de extensionalidad, para todo k'>=0, para todo a':
     ¿(duracion . (alargar k')) a '= ((k'*) . duracion) a'?
 
-Por definicion de (.), es equivalente a:
+por definicion de (.), es equivalente a:
     ¿duracion (alargar k' a') = k'* duracion a'?
 
-Sea k::Int, a::Animacion a,
+sea k::Int, a::Animacion a,
 por principio de induccion en la estructura a, quiero ver que:
     cb1, a=(Espera d)
         ¿duracion (alargar k (Espera d)) = k* duracion (Espera d)?
@@ -106,7 +111,10 @@ k* duracion (Par a1 a2)
 k* max (duracion a1) (duracion a2)
 
 -- lema
-para todo k. para todo n. para todo m.
+para todo i. para todo n'. para todo m'.
+    ¿max (i* n') (i* m') = i* max n' m'?
+
+sea k::Int, n::Int, m::Int, quiero ver que:
     ¿max (k* n) (k* m) = k* max n m?
 
 li:
@@ -123,26 +131,14 @@ i* max n m
 -- max
 i* (if n > m then n else m)
 
--- 4. Recursion estructural y primitiva para Animacion.
-foldA ::
-    (Duracion -> b) ->
-    (Duracion -> Accion a -> b) ->
-    (b -> b -> b) ->
-    (b -> b ->b) ->
-    Animacion a ->
-    b
+-- 4. Recursion estructural y primitiva para Animacion a.
+foldA :: (Duracion -> b) -> (Duracion -> Accion a -> b) -> (b -> b -> b) -> (b -> b ->b) -> Animacion a -> b
 foldA ef mf sf pf (Espera i) = ef i
 foldA ef mf sf pf (Mov i ac) = mf i ac
 foldA ef mf sf pf (Sec a1 a2) = sf (foldA ef mf sf pf a1) (foldA ef mf sf pf a2)
 foldA ef mf sf pf (Par a1 a2) = pf (foldA ef mf sf pf a1) (foldA ef mf sf pf a2)
 
-recA ::
-    (Duracion -> b) ->
-    (Duracion -> Accion a -> b) ->
-    (b -> b -> Animacion a -> Animacion a -> b) ->
-    (b -> b -> Animacion a -> Animacion a -> b) ->
-    Animacion a ->
-    b
+recA :: (Duracion -> b) -> (Duracion -> Accion a -> b) -> (b -> b -> Animacion a -> Animacion a -> b) -> (b -> b -> Animacion a -> Animacion a -> b) -> Animacion a -> b
 recA ef mf sf pf (Espera i) = ef i
 recA ef mf sf pf (Mov i ac) = mf i ac
 recA ef mf sf pf (Sec a1 a2) = sf (recA ef mf sf pf a1) (recA ef mf sf pf a2) a1 a2
@@ -195,6 +191,7 @@ contarHasta' = recN f z n
         f n r = r ++ [n]
 
 -- 6. Con esquemas.
+-- a. Dada una animación describe un simulador en el que la animación se repite infinitamente.
 ciclar :: Animacion a -> Simulador a -- Simulador a = Tiempo -> Frame a
 ciclar a = \t -> atIndex (t ´mod´ length (simular a)) (simular a)
 
@@ -203,6 +200,7 @@ atIndex = fold g (\i -> error "no existe un elemento en el indice dado")
     where g x r 0 = x
           g x r i = r (i-1)
 
+-- b. Dadas dos listas con la misma longitud, describe una Animacion que consiste en la secuencia tal que la animación de cada posición de una lista ocurre en simultáneo con la correspondiente en la otra lista.
 combinar :: [Animacion a] -> [Animacion a] -> Animacion a
 combinar = secuenciar . paralelizar . zip
 
@@ -212,6 +210,7 @@ paralelizar = map (\(a1, a2) -> Par a1 a2)
 secuenciar :: [Animacion a] -> Animacion a
 secuenciar = foldr (\a r -> Sec a r) (Espera 0)
 
+-- c. Describe una lista de Frames con la duración dada, donde en cada tiempo se observa la superposición de los simuladores en la lista de entrada.
 mezclar :: [Simulador a] -> Duracion -> [Frame a]
 mezclar ss d = foldr (\t r -> fusionar t ss : r) [] (contarHasta d)
 
