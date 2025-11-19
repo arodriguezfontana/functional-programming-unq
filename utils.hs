@@ -1,14 +1,10 @@
 -- slice 25
--- animacion 25
 -- midi 24
 -- funnel 24
--- spaceship 
--- multiset
 -- nim
 
 -- json
 -- multisetlight
--- multiset leng
 -- parcialito
 -- three
 -- svson
@@ -20,8 +16,6 @@
 
 -- tortuga NO
 -- prefix NO
-
-
 
 caminoMasCortoHasta e = foldTree cb cr e
     where cb z _ EmptyT = Nothing

@@ -151,40 +151,41 @@ uncurry :: (a -> b -> c) -> (a,b) -> c
 uncurry f (x,y) = f x y
 
 -- demos
-por principio de extensionalidad, para todo :
+por ppio. de ext., para todo :
     ¿?
-por definicion de (.), es equivalente a:
+por def. de (.), es eq. a:
+por def. de const, es eq. a:
+por def. de id, es eq. a:
 
-sea  , quiero ver que:
-    ¿?
-
-por principio de induccion estructural sobre la estructura de , es equivalente a demostrar:
+sea  , quiero demostrar que, ppio. de ind. estructural sobre , es eq. a:
     cb, =:
         ¿?
     ci, =:
         hi: ¡!
         ti: ¿?
 
-cb-izq:
+cbi:
     lado-izq
 =               (funcion.n)
-cb-der:
+cbd:
 cb demostrado.
 
-ci-izq:
-ci-der:
+cii:
+cid:
 ci demostrado.
 
--- demo lema
+-- demo lema por casos
 para todo :
+    ¿?
 
-sea , quiero ver que:
+sea , quiero demostrar que, por casos sobre :
+    c1, x=Empty y=cualquier caso
+    c2, x/=Empty y=Empty
+    c3, x/=Empty y/=Empty
 
-por analisis de casos sobre:
-
-particion en subcasos sobre el if:
-    sc1, = :
-    sc2, /= :
+por casos sobre if:
+    sc1, c=True:
+    sc2, c/=False:
 
 -- funciones de listas 
 length :: [a] -> Int

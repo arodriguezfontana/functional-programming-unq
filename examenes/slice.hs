@@ -29,8 +29,11 @@ normDrop :: Int -> SliceExp a -> SliceExp a
 normDrop n (Drop m s) = Drop (n+m) s
 normDrop n s = Drop n s
 
+-- d. Aplica take a una expresión SliceExp ya normalizada, sin evaluarla completamente. La expresion que devuelve no inicia con el contrsuctor Take. 
 takeS :: Int -> SliceExp a -> SliceExp a
--- Aplica take a una expresión SliceExp ya normalizada, sin evaluarla completamente. La expresion que devuelve no inicia con el contrsuctor Take. 
+takeS n (Base xs) = Base (take n xs)
+takeS n (Take m s) = takeS (min n m) s
+takeS n (Drop m s) = Drop m (takeS (n+m) s)
 
 -- 2. Demostrar: lenS . normalize = lenS.
 por ppio. de ext.:
@@ -39,13 +42,10 @@ para todo se:
 -- (.)
     ¿lenS (normalize se) = lenS se?
 
-sea
-se'::SliceExp a
-quiero ver que:
+sea se'::SliceExp a, quiero ver que:
     ¿lenS (normalize se') = lenS se'?
 
-por ppio. de ind. sobre la estructura se',
-es eq. a demostrar:
+por ppio. de ind. sobre la estructura se', es eq. a demostrar:
     cb, se'=(Base xs)
         ti: ¿lenS (normalize (Base xs)) = lenS (Base xs)?
     ci1, se'=(Take n s)
@@ -120,4 +120,8 @@ normalize' = foldSE
         else normDrop n s))
 
 -- d
-takeS' :: Int -> SliceExp a -> SliceExp a
+takeS' :: Int -> SliceExp a -> SliceExp a -- SliceExp a -> (Int  -> SliceExp a)
+takeS' = flip (foldSE  
+    (\xs n -> Base (take n xs))
+    (\m fr n -> fr (min n m))
+    (\m fr n -> Drop m (fr (n+m))))
