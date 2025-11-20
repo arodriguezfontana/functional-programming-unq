@@ -82,5 +82,3 @@ appF' :: Funnel a b -> ([b] -> b) -> [a] -> (Partition a, [b])
 appF' = foldF
         (\c h f xs-> step c f (h f xs))
         (\c f xs -> let (ys, zs) = partition' c xs in (ps, [f ys]))
-
--- 5. Demostrar: para todo fn. para todo f. para todo xs. ¿appF fn f xs = appF (complementF (complementF fn)) f xs?

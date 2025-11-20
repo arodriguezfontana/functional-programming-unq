@@ -192,27 +192,27 @@ contarHasta' = recN f z n
 
 -- 6. Con esquemas.
 -- a. Dada una animación describe un simulador en el que la animación se repite infinitamente.
-ciclar :: Animacion a -> Simulador a -- Simulador a = Tiempo -> Frame a
-ciclar a = \t -> atIndex (t ´mod´ length (simular a)) (simular a)
+ciclar :: Animacion a -> Simulador a 
+ciclar a = let frames = simular a 
+            in \n -> ciclar' (mod n (length frames)) frames
 
-atIndex :: Int -> [a] ->
-atIndex = fold g (\i -> error "no existe un elemento en el indice dado")
-    where g x r 0 = x
-          g x r i = r (i-1)
+ciclar' :: Int -> [Frame a] -> Frame a 
+ciclar' = flip (foldr (\fr frs n -> if n == 0 then fr else frs (n-1))
+                        (const []))
 
 -- b. Dadas dos listas con la misma longitud, describe una Animacion que consiste en la secuencia tal que la animación de cada posición de una lista ocurre en simultáneo con la correspondiente en la otra lista.
 combinar :: [Animacion a] -> [Animacion a] -> Animacion a
-combinar = secuenciar . paralelizar . zip
+combinar xs ys = secuenciar (paralelizar (zip xs ys))
 
 paralelizar :: [(Animacion a, Animaciona a)] -> [Animacion a] 
 paralelizar = map (\(a1, a2) -> Par a1 a2)
 
 secuenciar :: [Animacion a] -> Animacion a
-secuenciar = foldr (\a r -> Sec a r) (Espera 0)
+secuenciar = foldr (\a ar -> Sec a ar) (Espera 0)
 
 -- c. Describe una lista de Frames con la duración dada, donde en cada tiempo se observa la superposición de los simuladores en la lista de entrada.
 mezclar :: [Simulador a] -> Duracion -> [Frame a]
-mezclar ss d = foldr (\t r -> fusionar t ss : r) [] (contarHasta d)
+mezclar ss d = map (\t -> fusionar t ss) (contarHasta d)
 
 fusionar :: Int -> [Simulador a] -> Frame a
 fusionar t = foldr (\s r -> s t ++ r) []

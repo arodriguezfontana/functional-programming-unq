@@ -6,7 +6,7 @@
 . elem = any . (==)
 . map f (xs ++ ys) = map f xs ++ map f ys
 
--- lemas demostrados en las practicas
+-- lemas demostrados
 . any (elem x) = elem x . concat
 . subset xs ys = all (flip elem ys) xs
 . all null = null . concat
@@ -43,14 +43,13 @@ recN f z 0 = z
 recN f z n = f n (recN f z (n-1))
 
 foldT :: b -> (a -> b -> b -> b) -> Tree a -> b
-foldT z f EmptT = z
-foldT z f (fodeT x t1 t2) = f x (foldT z f t1) (foldT z f t2)
+foldT z f EmptyT = z
+foldT z f (NodeT x t1 t2) = f x (foldT z f t1) (foldT z f t2))
 
 recT :: b -> (a -> Tree a -> Tree a -> b -> b -> b) -> Tree a -> b
 recT z f EmptT = z
 recT z f (NodeT x t1 t2) = f x t1 t2 (recT z f t1) (recT z f t2)
 
--- otros esquemas
 map :: (a -> b) -> [a] -> [b]
 map f [] = []
 map f (x:xs) = f x : map f xs
@@ -68,7 +67,7 @@ scanr _ z []     = [z]
 scanr f z (x:xs) = let (y:ys) = scanr f z xs
     in f x y : y : ys
 
--- funciones recursivas utiles
+-- funciones recursivas
 zipLong :: [[a]] -> [[a]] -> [[a]]
 zipLong [] yss = yss
 zipLong xss [] = xss
@@ -118,6 +117,16 @@ take' n xs = foldr cr cb xs n
         cb n = []
         cr x r 0 = []
         cr x r n = x : r (n-1) -- r hace la recursion al aplicarlo
+
+-- Cuando ya le pase las 4 funciones, devuelve: MSExp a -> b, que si le paso un multiset, devuelve: b.
+-- El tipo de evalMSE: MSExp a -> a -> N, TIENE QUE SER IGUAL A: MSExp a -> b.
+-- Si tachamos MSExp a de ambos lados: a -> N ES IGUAL A b.
+evalMSE' :: Eq a => MSExp a -> a -> N -- el tipo de b es (a->N) porque evalMSE necesita recibir un valor a despues de la estructura
+evalMSE' = foldM
+    (\_ -> Z) -- const Z
+    (\n x y -> if x==y then n else Z)
+    (\n r y -> sumarN n (r y))
+    (\r1 r2 y-> sumarN (r1 y) (r2 y))
 
 -- funciones utiles
 id :: a -> a
@@ -183,10 +192,6 @@ sea , quiero demostrar que, por casos sobre :
     c2, x/=Empty y=Empty
     c3, x/=Empty y/=Empty
 
-por casos sobre if:
-    sc1, c=True:
-    sc2, c/=False:
-
 -- funciones de listas 
 length :: [a] -> Int
 length [] = 0
@@ -245,7 +250,6 @@ unzip ((x,y):xys) = let (xs, ys) = (unzip xys)
                         in (x:xs, y:ys)
 
 -- funciones de arboles
-
 sumarT :: Tree Int -> Int
 sumarT EmptyT = 0
 sumarT (NodeT n t1 t2) = n + sumarT t1 + sumarT t2
@@ -313,7 +317,67 @@ agregoACada _ [] = []
 agregoACada x (ys:yss) = (x : ys) : agregoACada x yss
 
 -- adicionales
-losAntecesoresDe :: a -> Tree a -> [a]
+caminoMasCortoHasta :: Eq a => a -> Tree a -> Maybe [Dir]
+caminoMasCortoHasta e = foldT 
+    Nothing 
+    (\x r1 r2 -> if x == e 
+        then Just [] 
+        else elMasCorto (agregarPaso Izq r1) (agregarPaso Der r2))
+
+agregarPaso :: Dir -> Maybe [Dir] -> Maybe [Dir]
+agregarPaso _ Nothing = Nothing
+agregarPaso d (Just camino) = Just (d : camino)
+
+elMasCorto :: Maybe [a] -> Maybe [a] -> Maybe [a]
+elMasCorto Nothing y = y
+elMasCorto x Nothing = x
+elMasCorto (Just p1) (Just p2) = 
+    if length p1 <= length p2 then Just p1 else Just p2
+
+estaEnElCamino :: [Dir] -> Tree a -> Bool
+estaEnElCamino ds EmptyT = False
+estaEnElCamino ds (NodeT n t1 t2) = case ds of
+    [] -> True
+    (Izq:ds) -> estaEnElCamino ds t1 
+    (Der:ds) -> estaEnElCamino ds t2
+
+estaEnElCamino' :: [Dir] -> Tree a -> Bool
+estaEnElCamino' = flip (foldT
+    (const False)
+    (\n r1 r2 ds -> case ds of
+            [] -> True
+            (Izq:ds) -> r1 ds
+            (Der:ds) -> r2 ds))
+
+todosLosCaminosDeDirs :: Tree a -> [[Dir]]
+todosLosCaminosDeDirs EmptyT = [[]]
+todosLosCaminosDeDirs (NodeT n t1 t2) = map (Izq :) (todosLosCaminosDeDirs t1) ++ map (Der :) (todosLosCaminosDeDirs t1)
+
+todosLosCaminosDeDirs' :: Tree a -> [[Dir]]
+todosLosCaminosDeDirs' = foldT 
+    []                                              
+    (\_ r1 r2 -> [] : map (Izq:) r1 ++ map (Der:) r2)
+
+todosLosCaminosDeDirsHasta :: Eq a => a -> Tree a -> [[Dir]]
+todosLosCaminosDeDirsHasta _ EmptyT = []
+todosLosCaminosDeDirsHasta e (NodeT x t1 t2) = 
+    let izq = map (Izq:) (todosLosCaminosDeDirsHasta e t1)
+        der = map (Der:) (todosLosCaminosDeDirsHasta e t2)
+        caminosAbajo = izq ++ der in 
+    if x == e 
+        then [] : caminosAbajo 
+        else caminosAbajo
+
+todosLosCaminosDeDirsHasta' :: Eq a => a -> Tree a -> [[Dir]]
+todosLosCaminosDeDirsHasta' e = foldT 
+    []                                  
+    (\x r1 r2 ->                        
+        let caminosHijos = map (Izq:) r1 ++ map (Der:) r2 in 
+            if x == e 
+            then [] : caminosHijos 
+            else caminosHijos)
+
+losAntecesoresDe :: a -> Tree a -> [a] -- bien pero no eficiente
 losAntecesoresDe _ EmptyT = []
 losAntecesoresDe e (NodeT e' t1 t2) = if elemT e t1
     then e' : losAntecesoresDe e t1
@@ -325,23 +389,47 @@ elemT :: Eq a => a -> Tree a -> Bool
 elemT _ EmptyT = False
 elemT e (NodeT e' t1 t2) = (e == e') || (elemT e t1) || (elemT e t2)
 
-sumCuadrados :: [Int] -> Int
-sumCuadrados [] = 0
-sumCuadrados (n:ns) = (n*n) + sumCuadrados ns
+losAntecesoresDe :: Eq a => a -> Tree a -> [a] -- bien y eficiente
+losAntecesoresDe e t = case buscar e t of
+    Just antecesores -> antecesores
+    Nothing -> []
+
+buscar :: Eq a => a -> Tree a -> Maybe [a]
+buscar _ EmptyT = Nothing
+buscar e (NodeT x t1 t2) = if x==e
+    then Just []                  
+    else case buscar e t1 of -- Miro izquierda.
+        Just camino -> Just (x : camino)
+        Nothing -> case buscar e t2 of  -- Miro derecha.
+            Just camino -> Just (x : camino)
+            Nothing     -> Nothing -- No estaba en ningún lado.
+
+losAntecesoresDe :: Eq a => a -> Tree a -> [a] -- fold
+losAntecesoresDe e t = 
+    case foldT Nothing 
+           (\x r1 r2 -> 
+               if x == e 
+               then Just []
+               else case r1 of
+                      Just izq -> Just (x : izq)
+                      Nothing  -> case r2 of
+                                    Just der -> Just (x : der)
+                                    Nothing  -> Nothing
+           ) t of
+       Just camino -> camino
+       Nothing -> []
 
 sumCuadradosFold :: [Int] -> Int
-sumCuadradosFold = foldr (\n ms -> (n*n) + ms) 0
+sumCuadradosFold = foldr (\n m -> (n*n) + m) 0
 
-subset :: [a] -> [a] -> Bool
-subset [] ys = True
-subset (x:xs) ys = elem x ys && subset xs ys
-
-subsetFold :: [a] -> [a] -> Bool
-subsetFold = foldr (\x h -> \ys -> elem x ys && (h ys)) (const True)
+subsetFold :: [a] -> [a] -> Bool -- tiene dos elementos asi que la rec es ([a] -> Bool) 
+subsetFold = foldr
+    (\x r -> \ys -> elem x ys && (r ys))
+    (const True)
 
 acumSum :: [Int] -> [Int]
 acumSum [] = []
-acumSum (n:ns) = let r = acumSum ns if
+acumSum (n:ns) = let r = acumSum ns if -- recursion primero = voy al fondo (let = eficiencia)
     if null r
         then [n]
         else (n + head r) : r
@@ -350,38 +438,24 @@ acumSumFold :: [Int] -> [Int]
 acumSumFold = foldr (\n ms -> if null ms 
     then [n]
     else (n + head ms) : ms) []
- 
-append :: [a] -> [a] -> [a]
-append [] = \ys -> ys
-append (x:xs) = \ys -> x : append xs ys
-
-appendFold :: [a] -> [a] -> [a]
-appendFold = foldr (\x h -> \ys -> x : h ys) (\ys -> ys)
-
-map :: (a -> b) -> [a] -> [b]
-map f [] = []
-map f (x:xs) = (f x) : (map f xs)
-
-mapFold :: (a -> b) -> [a] -> [b]
-mapFold f = foldr (\x ys -> (f x) : ys) []
 
 countBy :: (a -> Bool) -> [a] -> Int
-countBy f = foldr (\x n -> unoSi (f x) + n) 0
+countBy p = foldr (\x n -> unoSi (p x) + n) 0
 
-partition :: (a -> Bool) -> [a] -> ([a], [a])
+partition :: (a -> Bool) -> [a] -> ([a], [a]) -- recorre una lista y la divide en dos en una tupla (a,b), donde en a cumplen p, y en b no.
 partition f = foldr (\x (xs,ys) -> if f x then (x:xs, ys) else (xs, x:ys)) ([],[])
 
 remove :: Eq a => a -> [a]
 remove e = recr (\x xs rs -> if e == x then xs else x : rs) []
 
-take' :: Int -> [a] -> [a]
+take :: Int -> [a] -> [a]
 take _ [] = []
 take n (x:xs) = if n == 0 then [] else x : take (n-1) xs
 
 take' :: Int -> [a] -> [a]
 take' = flip (foldr (\x xs n -> if n == 0 then [] else x : xs (n-1)) (const []))
 
-drop' :: Int -> [a] -> [a]
+drop :: Int -> [a] -> [a]
 drop _ [] = []
 drop n (x:xs) = if n == 0 then x:xs else drop (n-1) xs
 
@@ -392,7 +466,7 @@ elemAt :: Int -> [a] -> a
 elemAt = flip (foldr (\x rs n -> if n == 0 then x else rs (n-1)) (const (error "F")))
 
 find :: (a -> Bool) -> [a] -> Maybe a
-find f = foldr (\x m -> if f x then Just x else m) Nothing
+find p = foldr (\x m -> if p x then Just x else m) Nothing
 
 unoSi :: Bool -> Int
 unoSi True = 1
