@@ -1,4 +1,4 @@
--- 1. Explícita.
+-- 1. Explicita.
 -- a. Describe la cantidad de ocurrencias del elementodado en el multiset.
 occursMSE :: a -> MSExp a -> Int
 occursMSE x m = occursMSEWith x id m
@@ -329,7 +329,7 @@ map f' (evalMSE m')
 
 c2 demostrado.
 
--- 3. Recursión estructural y primitiva para MSExp a.
+-- 3. Esquema recursivo y primitivo de MSExp a.
 foldMSE :: b -> (a -> b -> b) -> (a -> b -> b) -> (b -> b -> b) -> ((a->a) -> b -> b) -> MSExp a -> b
 foldMSE e af rf uf mf x f EmptMS = e
 foldMSE e af rf uf mf x f (AddMS x m) = af x (foldMSE e af rf uf mf m)

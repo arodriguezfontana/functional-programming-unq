@@ -1,36 +1,34 @@
--- lemas utiles
-. if b then f x else f y = f (if b then x else y) -- dist. de if
--- i* n > i* m = n > m (aritm.)
-. length (xs ++ ys) = length xs + length ys
-. count (const True) = length
-. elem = any . (==)
-. map f (xs ++ ys) = map f xs ++ map f ys
+-- Lemas demostrados en clase.
+if b then f x else f y = f (if b then x else y) -- Distr. del if
+i* n > i* m then x else y = n > m then x else y -- Arit.
+length (xs ++ ys) = length xs + length ys
+count (const True) = length
+elem = any . (==)
+map f (xs ++ ys) = map f xs ++ map f ys
+any (elem x) = elem x . concat
+subset xs ys = all (flip elem ys) xs
+all null = null . concat
+length = length . reverse
+reverse (xs ++ ys) = reverse ys ++ reverse xs
+all p (xs++ys) = all p (reverse xs) && all p (reverse ys)
+map id = id
+map f . map g = map (f . g)
+concat . map (map f) = map f . concat
+foldr ((+) . suma') 0 = sum . map suma'
+foldr f z . foldr (:) [] = foldr f z
+foldr f z (xs ++ ys) = foldr f (foldr f z ys) xs
+(+1) . foldr (+) 0 = foldr (+) 1
+many n f = foldr (.) id (replicate n f) siendo many 0 f = id
+many n f = f . many (n - 1)
+zipWith (flip f) xs ys = map (uncurry f) (flip zip xs ys)
+(f x y) = g x (h y) entonces h . foldr f z = foldr g (h z)
 
--- lemas demostrados
-. any (elem x) = elem x . concat
-. subset xs ys = all (flip elem ys) xs
-. all null = null . concat
-. length = length . reverse
-. reverse (xs ++ ys) = reverse ys ++ reverse xs
-. all p (xs++ys) = all p (reverse xs) && all p (reverse ys)
-. map id = id
-. map f . map g = map (f . g)
-. concat . map (map f) = map f . concat
-. foldr ((+) . suma') 0 = sum . map suma'
-. foldr f z . foldr (:) [] = foldr f z
-. foldr f z (xs ++ ys) = foldr f (foldr f z ys) xs
-. (+1) . foldr (+) 0 = foldr (+) 1
-. many n f = foldr (.) id (replicate n f) siendo many 0 f = id
-. many n f = f . many (n - 1)
-. zipWith (flip f) xs ys = map (uncurry f) (flip zip xs ys)
-. (f x y) = g x (h y) entonces h . foldr f z = foldr g (h z)
-
--- esquemas
+-- Esquemas.
 foldr :: (a -> b -> b) -> b -> [a] -> b
 foldr _ z [] = z
 foldr f z (x:xs) = f x (foldr f z xs)
 
-recr :: b -> (a -> [a] -> b -> b) -> [a] -> b -- cuando uso el caso recursivo o devuelvo algo en el caso base
+recr :: b -> (a -> [a] -> b -> b) -> [a] -> b -- Se utiliza cuando se debe usar el caso recursivo o se devuelve algo en el caso base.
 recr z _ [] = z
 recr z f (x:xs) = f x xs (recr z f xs)
 
@@ -67,35 +65,23 @@ scanr _ z []     = [z]
 scanr f z (x:xs) = let (y:ys) = scanr f z xs
     in f x y : y : ys
 
--- funciones recursivas
-zipLong :: [[a]] -> [[a]] -> [[a]]
-zipLong [] yss = yss
-zipLong xss [] = xss
-zipLong (xs:xss) (ys:yss) = (xs++ys) : zipLong xss yss
+foldC :: a -> -- Para hacer un esquema largo sin escribir tanto.
+    (Variable -> String -> a) ->
+    (Variable -> a) ->
+    (a -> a -> a) ->
+    (Exp -> a -> a -> a) ->
+    Cmd ->
+    a
+foldC fsk fst fp fsq fi c = case c of
+    Skip -> fsk
+    StoreInput v s -> fst v s
+    PrintVar v -> fp v
+    Seq c1 c2 -> fsq (re c1) (re c2)
+    If e c1 c2 -> fi e (re c1) (re c2)
+  where
+    re = foldCmd fsk fst fp fsq fi
 
-zip :: [a] -> [b] -> [(a,b)]
-zip [] _ = []
-zip _ [] = []
-zip (x:xs) (y:ys) = (x,y) : zip xs ys
-
-unzip :: [(a,b)] -> ([a],[b])
-unzip [] = ([], [])
-unzip ((x,y):xys) = let (xs, ys) = (unzip xys) 
-                        in (x:xs, y:ys)
-
-replicate :: Int -> a -> [a]
-replicate 0 n = []
-replicate n x = x : replicate (n-1) x
-
-contarHasta :: Int -> [Int]
-contarHasta 0 = []
-contarHasta n = contarHasta (n-1) ++ [n]
-
-contarDesde :: Int -> [Int]
-contarDesde 0 = []
-contarDesde n = n : contarDesde (n-1)
-
--- funciones con esquemas
+-- Funciones con esquemas y algunas explicaciones.
 zipLong' :: [[a]] -> ([[a]] -> [[a]])
 zipLong' = recr
     (\yss -> yss)
@@ -111,24 +97,14 @@ zipLong'' yss = recr cb cr yss
         cr xs xss r (ys:yss') = (xs++ys) : r yss' -- zipLong (xs:xss) (ys:yss) = (xs++ys) : (zipLong xss) yss
         -- r no es [[a]], es [[a]] -> [[a]]
 
-take' :: Int -> [a] -> [a]
-take' n xs = foldr cr cb xs n
-    where
-        cb n = []
-        cr x r 0 = []
-        cr x r n = x : r (n-1) -- r hace la recursion al aplicarlo
-
--- Cuando ya le pase las 4 funciones, devuelve: MSExp a -> b, que si le paso un multiset, devuelve: b.
--- El tipo de evalMSE: MSExp a -> a -> N, TIENE QUE SER IGUAL A: MSExp a -> b.
--- Si tachamos MSExp a de ambos lados: a -> N ES IGUAL A b.
-evalMSE' :: Eq a => MSExp a -> a -> N -- el tipo de b es (a->N) porque evalMSE necesita recibir un valor a despues de la estructura
-evalMSE' = foldM
+evalMSE' :: Eq a => MSExp a -> a -> N -- Para evalMSE', el tipo de b es (a -> N) porque necesita recibir un valor a despues del multiset de tipo MSExp a.
+evalMSE' = foldM -- Cuando le paso al fold las 4 funciones, devuelve el tipo MSExp a -> b, si le paso un multiset, devuelve b.
     (\_ -> Z) -- const Z
     (\n x y -> if x==y then n else Z)
-    (\n r y -> sumarN n (r y))
+    (\n r y -> sumarN n (r y)) -- r::(a -> N) (no (N)), y::(a).
     (\r1 r2 y-> sumarN (r1 y) (r2 y))
 
--- funciones utiles
+-- Funciones basicas.
 id :: a -> a
 id x = x
 
@@ -159,12 +135,9 @@ curry f x y = f (x,y)
 uncurry :: (a -> b -> c) -> (a,b) -> c
 uncurry f (x,y) = f x y
 
--- demos
+-- Estructura para las demos.
 por ppio. de ext., para todo :
     ¿?
-por def. de (.), es eq. a:
-por def. de const, es eq. a:
-por def. de id, es eq. a:
 
 sea  , quiero demostrar que, ppio. de ind. estructural sobre , es eq. a:
     cb, =:
@@ -174,8 +147,8 @@ sea  , quiero demostrar que, ppio. de ind. estructural sobre , es eq. a:
         ti: ¿?
 
 cbi:
-    lado-izq
-=               (funcion.n)
+    x
+=      (y.n)
 cbd:
 cb demostrado.
 
@@ -183,7 +156,7 @@ cii:
 cid:
 ci demostrado.
 
--- demo lema por casos
+-- Estructura para los lemas.
 para todo :
     ¿?
 
@@ -192,94 +165,7 @@ sea , quiero demostrar que, por casos sobre :
     c2, x/=Empty y=Empty
     c3, x/=Empty y/=Empty
 
--- funciones de listas 
-length :: [a] -> Int
-length [] = 0
-length (x:xs) = 1 + length xs
-
-sum :: [Int] -> Int
-sum [] = 0
-sum (n:ns) = n + sum ns
-
-product :: [Int] -> Int
-product [] = 0
-product (n:ns) = n * product ns
-
-concat :: [[a]] -> [a]
-concat [] = []
-concat (xs:xss) = xs ++ concat xss
-
-elem :: Eq a => a -> [a] -> Bool
-elem _ [] = False
-elem e (x:xs) = e == x || elem e xs
-
-all :: (a -> Bool) -> [a] -> Bool
-all f [] = True
-all f (x:xs) = f x && all f xs
-
-any :: (a -> Bool) -> [a] -> Bool
-any f [] = False
-any f (x:xs) = f x || any f xs
-
-count :: (a -> Bool) -> [a] -> Int
-count f [] = 0
-count f (x:xs) = if f x
-    then 1 + count f xs
-    else count f xs
-
-subset :: Eq a => [a] -> [a] -> Bool
-subset [] ys = True
-subset (x:xs) ys = elem x ys && subset xs ys
-
-(++) :: [a] -> [a] -> [a]
-(++) [] ys = ys
-(++) (x:xs) ys = x : xs ++ ys
-
-reverse :: [a] -> [a]
-reverse [] = []
-reverse (x:xs) = reverse xs ++ [x]
-
-zip :: [a] -> [b] -> [(a,b)]
-zip [] _ = []
-zip _ [] = []
-zip (x:xs) (y:ys) = (x,y) : (zip xs ys)
-
-unzip :: [(a,b)] -> ([a],[b])
-unzip [] = []
-unzip ((x,y):xys) = let (xs, ys) = (unzip xys) 
-                        in (x:xs, y:ys)
-
--- funciones de arboles
-sumarT :: Tree Int -> Int
-sumarT EmptyT = 0
-sumarT (NodeT n t1 t2) = n + sumarT t1 + sumarT t2
-
-sizeT :: Tree a -> Int
-sizeT EmptyT = 0
-sizeT (NodeT n t1 t2) = 1 + sizeT t1 + sizeT t2
-
-anyT :: (a -> Bool) -> Tree a -> Bool
-anyT f EmptyT = False 
-anyT f (NodeT x t1 t2) = f x || anyT f t1 || any f t2
-
-countT :: (a -> Bool) -> Tree a -> Int
-countT f EmptyT = 0
-count f (NodeT x t1 t2) = if f x
-    then 1 + count f t1 + count f t2
-    else count f t1 + count f t2
-
-countLeaves :: Tree a -> Int
-countLeaves EmptyT = 1
-countLeaves (NodeT _ t1 t2) = countLeaves t1 + countLeaves t2
-
-heightT :: Tree a -> Int
-heightT EmptyT = 0
-heightT (NodeT _ t1 t2) = 1 + max (heightT t1) (heightT t2)
-
-inOrder :: Tree a -> [a]
-inOrder EmptyT = []
-inOrder (NodeT n t1 t2) = inOrder t1 ++ [n] ++ inOrder t2
-
+-- Funciones adicionales.
 listPerLevel :: Tree a -> [[a]]
 listPerLevel EmptyT = []
 listPerLevel (NodeT x t1 t2) = [x] : zipConcat (listPerLevel t1) (listPerLevel t2)
@@ -289,23 +175,10 @@ zipConcat [] ys = ys
 zipConcat xs [] = xs
 zipConcat (x:xs) (y:ys) = (x ++ y) : zipConcat xs ys
 
-mirrorT :: Tree a -> Tree a
-mirrorT EmptyT = EmptyT
-mirrorT (NodeT x t1 t2) = NodeT x (mirrorT t2) (mirrorT t1)
-
 levelN :: Int -> Tree a -> [a]
 levelN _ EmptyT = []
 levelN 0 (NodeT x _ _) = [x]
 levelN n (NodeT _ t1 t2) = levelN (n-1) t1 ++ levelN (n-1) t2
-
-ramaMasLarga :: Tree a -> [a]
-ramaMasLarga EmptyT = []
-ramaMasLarga (NodeT x t1 t2) = x : laDeMayorLongitud (ramaMasLarga t1) (ramaMasLarga t2)
-
-laDeMayorLongitud :: [a] -> [a] -> [a]
-laDeMayorLongitud xs ys = if longitud xs >= longitud ys
-                           then xs
-                           else ys
 
 todosLosCaminos :: Tree a -> [[a]]
 todosLosCaminos EmptyT = []
@@ -316,7 +189,6 @@ agregoACada :: a -> [[a]] -> [[a]]
 agregoACada _ [] = []
 agregoACada x (ys:yss) = (x : ys) : agregoACada x yss
 
--- adicionales
 caminoMasCortoHasta :: Eq a => a -> Tree a -> Maybe [Dir]
 caminoMasCortoHasta e = foldT 
     Nothing 
@@ -377,7 +249,7 @@ todosLosCaminosDeDirsHasta' e = foldT
             then [] : caminosHijos 
             else caminosHijos)
 
-losAntecesoresDe :: a -> Tree a -> [a] -- bien pero no eficiente
+losAntecesoresDe :: a -> Tree a -> [a] -- Bien pero no eficiente.
 losAntecesoresDe _ EmptyT = []
 losAntecesoresDe e (NodeT e' t1 t2) = if elemT e t1
     then e' : losAntecesoresDe e t1
@@ -389,7 +261,7 @@ elemT :: Eq a => a -> Tree a -> Bool
 elemT _ EmptyT = False
 elemT e (NodeT e' t1 t2) = (e == e') || (elemT e t1) || (elemT e t2)
 
-losAntecesoresDe :: Eq a => a -> Tree a -> [a] -- bien y eficiente
+losAntecesoresDe :: Eq a => a -> Tree a -> [a] -- Bien y eficiente.
 losAntecesoresDe e t = case buscar e t of
     Just antecesores -> antecesores
     Nothing -> []
@@ -404,7 +276,7 @@ buscar e (NodeT x t1 t2) = if x==e
             Just camino -> Just (x : camino)
             Nothing     -> Nothing -- No estaba en ningún lado.
 
-losAntecesoresDe :: Eq a => a -> Tree a -> [a] -- fold
+losAntecesoresDe :: Eq a => a -> Tree a -> [a]
 losAntecesoresDe e t = 
     case foldT Nothing 
            (\x r1 r2 -> 
@@ -422,14 +294,14 @@ losAntecesoresDe e t =
 sumCuadradosFold :: [Int] -> Int
 sumCuadradosFold = foldr (\n m -> (n*n) + m) 0
 
-subsetFold :: [a] -> [a] -> Bool -- tiene dos elementos asi que la rec es ([a] -> Bool) 
+subsetFold :: [a] -> [a] -> Bool
 subsetFold = foldr
     (\x r -> \ys -> elem x ys && (r ys))
     (const True)
 
 acumSum :: [Int] -> [Int]
 acumSum [] = []
-acumSum (n:ns) = let r = acumSum ns if -- recursion primero = voy al fondo (let = eficiencia)
+acumSum (n:ns) = let r = acumSum ns if -- La recursion primero se usa para recorrer desde el fondo y al usar let se obtiene eficiencia al hacer la recursion una sola vez.
     if null r
         then [n]
         else (n + head r) : r
@@ -442,31 +314,43 @@ acumSumFold = foldr (\n ms -> if null ms
 countBy :: (a -> Bool) -> [a] -> Int
 countBy p = foldr (\x n -> unoSi (p x) + n) 0
 
-partition :: (a -> Bool) -> [a] -> ([a], [a]) -- recorre una lista y la divide en dos en una tupla (a,b), donde en a cumplen p, y en b no.
+partition :: (a -> Bool) -> [a] -> ([a], [a]) -- Recorre una lista y la divide en dos en una tupla (a,b), donde en a cumplen p, y en b no.
 partition f = foldr (\x (xs,ys) -> if f x then (x:xs, ys) else (xs, x:ys)) ([],[])
 
 remove :: Eq a => a -> [a]
 remove e = recr (\x xs rs -> if e == x then xs else x : rs) []
 
-take :: Int -> [a] -> [a]
-take _ [] = []
-take n (x:xs) = if n == 0 then [] else x : take (n-1) xs
-
 take' :: Int -> [a] -> [a]
 take' = flip (foldr (\x xs n -> if n == 0 then [] else x : xs (n-1)) (const []))
-
-drop :: Int -> [a] -> [a]
-drop _ [] = []
-drop n (x:xs) = if n == 0 then x:xs else drop (n-1) xs
 
 drop' :: Int -> [a] -> [a]
 drop' = flip (foldr (\x rs n -> if n == 0 then x : rs 0 else rs (n-1)) (const []))
 
-elemAt :: Int -> [a] -> a
-elemAt = flip (foldr (\x rs n -> if n == 0 then x else rs (n-1)) (const (error "F")))
+elemAt' :: Int -> [a] -> a
+elemAt' = flip (foldr (\x rs n -> if n == 0 then x else rs (n-1)) (const (error "")))
 
-find :: (a -> Bool) -> [a] -> Maybe a
-find p = foldr (\x m -> if p x then Just x else m) Nothing
+zipLong :: [[a]] -> [[a]] -> [[a]]
+zipLong [] yss = yss
+zipLong xss [] = xss
+zipLong (xs:xss) (ys:yss) = (xs++ys) : zipLong xss yss
+
+zip :: [a] -> [b] -> [(a,b)]
+zip [] _ = []
+zip _ [] = []
+zip (x:xs) (y:ys) = (x,y) : zip xs ys
+
+unzip :: [(a,b)] -> ([a],[b])
+unzip [] = ([], [])
+unzip ((x,y):xys) = let (xs, ys) = (unzip xys) 
+                        in (x:xs, y:ys)
+
+contarHasta :: Int -> [Int]
+contarHasta 0 = []
+contarHasta n = contarHasta (n-1) ++ [n]
+
+contarDesde :: Int -> [Int]
+contarDesde 0 = []
+contarDesde n = n : contarDesde (n-1)
 
 unoSi :: Bool -> Int
 unoSi True = 1

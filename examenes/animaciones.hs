@@ -1,4 +1,4 @@
--- 1. Explícita (Un único recorrido sobre cada lista).
+-- 1. Explicita.
 -- a. Dadas dos listas de números sin repetidos, ordenadas en forma creciente, describe una lista ordenada y sin repetidos que contiene los elementos de ambas listas.
 combinarSinDuplicados :: [Int] -> [Int] -> [Int]
 combinarSinDuplicados [] ys = ys
@@ -9,7 +9,7 @@ combinarSinDuplicados (x:xs) (y:ys) = if x == y
         then x : combinarSinDuplicados xs (y:ys)
         else y : combinarSinDuplicados (x:xs) ys
 
--- 2. Explícita.
+-- 2. Explicita.
 -- a. Describe la duración total de la animación (considerando que las acciones en paralelo terminan cuando termina la más larga).
 duracion :: Animacion a -> Int
 duracion (Espera d) = d
@@ -131,7 +131,7 @@ i* max n m
 -- max
 i* (if n > m then n else m)
 
--- 4. Recursion estructural y primitiva para Animacion a.
+-- 4. Esquema recursivo y primitivo de Animacion a.
 foldA :: (Duracion -> b) -> (Duracion -> Accion a -> b) -> (b -> b -> b) -> (b -> b ->b) -> Animacion a -> b
 foldA ef mf sf pf (Espera i) = ef i
 foldA ef mf sf pf (Mov i ac) = mf i ac
@@ -190,7 +190,7 @@ contarHasta' = recN f z n
         z = []
         f n r = r ++ [n]
 
--- 6. Con esquemas.
+-- 6. Utilizando esquemas.
 -- a. Dada una animación describe un simulador en el que la animación se repite infinitamente.
 ciclar :: Animacion a -> Simulador a 
 ciclar a = let frames = simular a 

@@ -1,4 +1,4 @@
--- 1. Recursion explicita.
+-- 1. Explicita.
 -- a. Devuelve la lista final, luego de evaluar todas las operaciones.
 materialize :: SliceExp a -> [a]
 materialize (Base xs) = xs
@@ -150,7 +150,7 @@ lenS (Drop m s)
 
 Lema 2 demostrado.
 
--- 3. Esquema primitivo y recursivo de SliceExp a. 
+-- 3. Esquema primitivo y recursivo de SliceExp a.
 foldSE :: ([a] -> b) -> (Int -> b -> b) -> (Int -> b -> b) -> SliceExp a -> b
 foldSE bf tf df (Base xs) = bf xs
 foldSE bf tf df (Take n s) = tf n (foldSE bf tf df s)
@@ -161,7 +161,7 @@ recSE bf tf df (Base xs) = bf xs
 recSE bf tf df (Take n s) = tf n s (recSE bf tf df s)
 recSE bf tf df (Drop n s) = df n s (recSE bf tf df s)
 
--- 4. Utilizando esquemas.
+-- 4. Con esquemas.
 materialize' :: SliceExp a -> [a]
 materialize' = foldS id take drop
 

@@ -34,7 +34,7 @@ normUnion Empty m2 = m2
 normUnion m1 Empty = m1 
 normUnion m1 m2 = Union m1 m2 
 
--- d.  Describe la cantidad de "fallas" que tiene el multiset dado para estar normalziado, (o sea, la cantidad de constructores AddAll ademas de la cantidad de constructores Empty que son argumento de una Union). Observar que si cantFallas m = 0, entonces m esta normalizado.
+-- d. Describe la cantidad de "fallas" que tiene el multiset dado para estar normalziado, (o sea, la cantidad de constructores AddAll ademas de la cantidad de constructores Empty que son argumento de una Union). Observar que si cantFallas m = 0, entonces m esta normalizado.
 cantFallas :: MSExp a -> Int
 cantFallas Empty = 0
 cantFallas (Entry n x) = 0 
@@ -46,7 +46,7 @@ unoSiHayEmpty Empty m2 = 1
 unoSiHayEmpty m1 Empty = 1 
 unoSiHayEmpty m1 m2 = 0 
 
--- 2. Esquema primitivo y recursivo de MSExp a. 
+-- 2. Esquema recursivo y primitivo de MSExp a. 
 foldM :: b -> (N -> a -> b) -> (N -> b -> b) -> (b -> b -> b) -> MSExp a -> b
 foldM z ef af uf Empty = z
 foldM z ef af uf (Entry n x) = ef n x 
@@ -60,10 +60,7 @@ recM z ef af uf (AddAll n ms) = af n ms (recM z ef af uf ms)
 recM z ef af uf (Union m1 m2) = uf m1 m2 (recM z ef af uf m1) (recM z ef af uf m2)
 
 -- 3. Con esquemas.
--- Cuando ya le pase las 4 funciones, devuelve: MSExp a -> b, que si le paso un multiset, devuelve: b.
--- El tipo de evalMSE: MSExp a -> a -> N, TIENE QUE SER IGUAL A: MSExp a -> b.
--- Si tachamos MSExp a de ambos lados: a -> N ES IGUAL A b.
-evalMSE' :: Eq a => MSExp a -> a -> N -- el tipo de b es (a->N) porque evalMSE necesita recibir un valor a despues de la estructura
+evalMSE' :: Eq a => MSExp a -> a -> N -- el tipo de b es (a->N) porque evalMSE necesita recibir un valor a despues de la estructura.
 evalMSE' = foldM
     (\_ -> Z) -- const Z
     (\n x y -> if x==y then n else Z)
