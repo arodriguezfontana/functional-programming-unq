@@ -16,3 +16,8 @@ Este repositorio contiene los trabajos prácticos realizados en la materia Progr
 [TP-8:](https://github.com/arodriguezfontana/functional-programming-unq/tree/main/practica-8) Inducción y recursión II. </br>
 [TP-9:](https://github.com/arodriguezfontana/functional-programming-unq/tree/main/practica-9) Inducción y recursión III. </br>
 [TP-10:](https://github.com/arodriguezfontana/functional-programming-unq/tree/main/practica-10) Inducción y recursión IV. </br>
+[TP-11:](https://github.com/arodriguezfontana/functional-programming-unq/tree/main/practica-11) Esquemas de funciones I. </br>
+[TP-12:](https://github.com/arodriguezfontana/functional-programming-unq/tree/main/practica-12) Esquemas de funciones II. </br>
+[TP-13:](https://github.com/arodriguezfontana/functional-programming-unq/tree/main/practica-13) Mónadas. </br>
+[TP-14:](https://github.com/arodriguezfontana/functional-programming-unq/tree/main/practica-14) Lambda Cálculo. </br>
+[Examenes.](https://github.com/arodriguezfontana/functional-programming-unq/tree/main/examenes) </br>
