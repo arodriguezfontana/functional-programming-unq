@@ -1,6 +1,7 @@
 # Programación Funcional
 
-Este repositorio contiene los trabajos prácticos realizados en la materia Programación Funcional.
+Este repositorio contiene los trabajos prácticos realizados en la materia Programación Funcional. En ellos se trabajó en la transición hacia un modelo de cómputo basado en funciones puras,
+el desarrollo de razonamientos lógicos para la demostración de propiedades, el uso de sistemas de tipos avanzados y la aplicación de esquemas de recursión, entre otros conceptos fundamentales del paradigma funcional.
 
 ### Tecnologías
 * Haskell
